@@ -1,0 +1,7 @@
+# Zeilenenden normalisieren: Textdateien als LF im Repo, nativ beim Checkout.
+* text=auto
+
+# Binärdateien (3D-/Bild-Artefakte) nie als Text behandeln.
+*.stl binary
+*.3mf binary
+*.png binary
