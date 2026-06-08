@@ -1,0 +1,22 @@
+# --- Betriebssystem ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Editor / IDE ---
+.vscode/
+*.swp
+*~
+
+# --- Python ---
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# --- OpenSCAD / temporäre Hilfs- & Test-Artefakte ---
+# (die ausgelieferten STL/3MF/PNG werden bewusst MITgeliefert)
+*.bak
+_*.scad
+*_test.stl
+*_test.png
