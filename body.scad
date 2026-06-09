@@ -4,8 +4,10 @@
 //   - geschlossenem Boden; HINTEN offen für die einschiebbare Rückwand
 //   - Feder-&-Nut-Schiebehaltung der Einsätze: seitliche Lippen an der
 //     Fach-Oberkante (Einsatz von hinten einschieben, Frontwand = Anschlag)
-//   - zwei hintere Eckpfosten (nach außen verdickt) mit vertikaler Nut +
-//     Boden-Nut für die Rückwand
+//   - zwei MASSIVE hintere Eckpfosten (Kabelbox-Stil, rear_post_d tief). Die
+//     senkrechte Rückwand-Nut sitzt auf Plattenhöhe; DAHINTER bleibt der volle
+//     Pfosten stehen (~5,7 mm) -> Feder in Y gefangen, kein dünner Steg/Anschlag,
+//     der beim Stützen-Entfernen bricht.
 //   - 4 Füßen; Voronoi-Relief (eingerückt) auf Front + 2 Seiten
 // =====================================================================
 include <params.scad>
@@ -20,13 +22,14 @@ module rounded_block(w, d, h, r) {
     }
 }
 
-// Fach-Aushöhlung je Fach als 3-Band-Profil (hinten offen):
+// Fach-Aushöhlung je Fach als 3-Band-Profil (endet an der Rückwand-Vorderkante;
+// der Bereich dahinter wird von rear_cut geöffnet):
 //   Band 1: unteres Fach (Ladestation/Auflage), schmaler -> Ledge
 //   Band 2: Einsatzkörper, volle Fachbreite
 //   Band 3: "Mund" oben, schmaler -> stehenbleibende Lippe übergreift den Einsatz
 module bay_cutouts() {
     yb = wall_t;                 // Front-Innenkante (Frontwand bleibt Anschlag)
-    yd = outer_d + 1 - yb;       // nach hinten durchgehend offen
+    yd = rear_wall_y0 - yb;      // Hohlraum endet an der Rückwand-Vorderkante
     for (i = [0 : n_bays - 1]) {
         fn = bays[i][0]; mk = bays[i][1];
         x0 = wall_t + i * (bay_inner_w + divider_t);
@@ -43,27 +46,29 @@ module bay_cutouts() {
     }
 }
 
-// Rückwand-Aufnahme (Subtraktion): Plattenraum (volle Innenbreite, hinten/oben
-// offen) + zwei vertikale Feder-Nuten BÜNDIG in den dicken Seitenwänden
-// (kein Außenpfosten) + quer laufende Boden-Nut. Die Wand vor der Nut
-// (y < rear_wall_y0) bleibt stehen und fängt die Feder in Y.
+// Rückwand-Aufnahme (Subtraktion):
+//   - Plattenraum: volle Innenbreite, von der Rückwand-Vorderkante bis ganz nach
+//     HINTEN durchgehend offen -> hinter der Rückwand bleibt nur die offene
+//     Pfosten-Lücke (Trennwände enden vor der Rückwand, keine Stummel dahinter).
+//   - zwei senkrechte Feder-Nuten in den MASSIVEN Eckpfosten, auf Plattenhöhe (Y).
+//     Hinter der Nut bleibt der volle Pfosten stehen -> Feder in Y gefangen, robust.
+//   - quer laufende Boden-Nut für die Plattenunterkante.
 module rear_cut() {
-    // Plattenraum
+    // Plattenraum (bis zur Rückseite durchgehend -> öffnet die Pfosten-Lücke)
     translate([wall_t - rear_clear, rear_wall_y0 - rear_clear, floor_t])
-        cube([inner_w + 2*rear_clear, rear_wall_t + rear_clear + 1, body_height + 1]);
-    // seitliche Feder-Nuten (links/rechts): HINTEN GESCHLOSSEN (Wand-Skin
-    // rear_back_skin bleibt stehen) -> Feder in Y gefangen, Rückwand sitzt fest.
+        cube([inner_w + 2*rear_clear,
+              outer_d - rear_wall_y0 + rear_clear + 1, body_height + 1]);
+    // seitliche Feder-Nuten (links/rechts) IM Pfosten, auf Plattenhöhe (Y).
     xg0 = wall_t - rear_tongue_w - rear_clear;
-    gd  = rear_wall_t + rear_clear - rear_back_skin;   // Nuttiefe in Y (zu)
     for (sx = [0, 1]) {
         gx = (sx == 0) ? xg0 : (outer_w - wall_t);
         translate([gx, rear_wall_y0 - rear_clear, floor_t - floor_groove_d])
-            cube([rear_tongue_w + rear_clear, gd, body_height + 1]);
+            cube([rear_tongue_w + rear_clear, rear_wall_t + 2*rear_clear,
+                  body_height + 1]);
     }
-    // Boden-Nut quer (Plattenunterkante), ebenfalls hinten geschlossen
+    // Boden-Nut quer (Plattenunterkante)
     translate([wall_t - rear_tongue_w, rear_wall_y0, floor_t - floor_groove_d])
-        cube([inner_w + 2*rear_tongue_w, rear_wall_t - rear_back_skin,
-              floor_groove_d + 0.01]);
+        cube([inner_w + 2*rear_tongue_w, rear_wall_t, floor_groove_d + 0.01]);
 }
 
 module feet() {
@@ -72,20 +77,6 @@ module feet() {
          py = [insets, outer_d - insets])
         translate([px, py, -foot_h])
             cylinder(h = foot_h + 2, r = foot_r, $fn = 36);
-}
-
-// Nut-Anschlag HINTEN: kleiner eckiger Block hinter jeder Feder-Nut, der die
-// (durch die Eckrundung weggefräste) Rückwand des Nut-Kanals wiederherstellt
-// -> Rückwand-Feder ist in Y gefangen. Wird NACH der Differenz vereinigt, damit
-// er voll massiv bleibt.
-module rear_stops() {
-    xg0 = wall_t - rear_tongue_w - rear_clear;
-    for (sx = [0, 1]) {
-        gx = (sx == 0) ? xg0 : (outer_w - wall_t);
-        translate([gx, outer_d - rear_back_skin, floor_t - floor_groove_d])
-            cube([rear_tongue_w + rear_clear, rear_back_skin,
-                  body_height - (floor_t - floor_groove_d)]);
-    }
 }
 
 // Rundungs-Hülle für den Korpus: rundet ALLE Oberkanten sauber mit R5 (auch die
@@ -103,21 +94,18 @@ module _body_round_env() {
 
 module body() {
     intersection() {
-        union() {
-            difference() {
-                union() {
-                    rounded_block(outer_w, outer_d, body_height, fillet_r);
-                    feet();
-                    // Voronoi-Relief (eingerückt um fillet_r) auf Front + 2 Seiten
-                    // (Rückseite trägt die separate Rückwand -> dort eigenes Relief)
-                    relief_front(outer_w, body_height, voro_face_long,  voro_strut, relief_h, fillet_r);
-                    relief_left (outer_d, body_height, voro_face_short, voro_strut, relief_h, fillet_r);
-                    relief_right(outer_w, outer_d, body_height, voro_face_short, voro_strut, relief_h, fillet_r);
-                }
-                bay_cutouts();
-                rear_cut();
+        difference() {
+            union() {
+                rounded_block(outer_w, outer_d, body_height, fillet_r);
+                feet();
+                // Voronoi-Relief (eingerückt um fillet_r) auf Front + 2 Seiten
+                // (Rückseite trägt die separate Rückwand -> dort eigenes Relief)
+                relief_front(outer_w, body_height, voro_face_long,  voro_strut, relief_h, fillet_r);
+                relief_left (outer_d, body_height, voro_face_short, voro_strut, relief_h, fillet_r);
+                relief_right(outer_w, outer_d, body_height, voro_face_short, voro_strut, relief_h, fillet_r);
             }
-            rear_stops();
+            bay_cutouts();
+            rear_cut();
         }
         _body_round_env();
     }

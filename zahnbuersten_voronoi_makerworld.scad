@@ -30,7 +30,7 @@ bay_inner_w  = 57;    // Innenbreite je Fach in X (mm)
 divider_t    = 3;     // Trennwand zwischen Fächern (mm)
 wall_t       = 5.0;   // Außenwandstärke (mm) - dick genug für die bündige
                       //   senkrechte Rückwand-Nut in den Seitenwänden (statt Außenpfosten)
-body_depth   = 78;    // Innentiefe in Y (mm)
+body_depth   = 79;    // lichte Fachtiefe in Y (Front-Innenkante .. Rückwand-Vorderkante)
 floor_t      = 3.0;   // Bodenstärke (mm, jetzt geschlossen)
 // Wandhöhe = Boden + größte Ladestationshöhe -> Ladestation schließt bündig ab
 body_height  = 24;    // = floor_t(3) + Oral-B-Ladehöhe(21); bei Änderung anpassen
@@ -56,17 +56,22 @@ rail_thick    = 3.0;  // Höhe der Lippe/Feder (Z) — kräftiger, gut sichtbar
 rail_clear    = 0.25; // Spiel Feder <-> Lippe
 rail_cham     = 0.8;  // 45°-Fase (stützenfreier Druck der Lippen-Unterseite)
 
-// ---- separate Rückwand (von oben senkrecht in die Seitenwände) -----
-//  Die senkrechte Nut liegt BÜNDIG in den (dicken) Seitenwänden -> keine
-//  Außenpfosten. Einsatz läuft innerhalb wall_t, Nut außerhalb -> kollisionsfrei.
+// ---- separate Rückwand + hintere Eckpfosten (Kabelbox-Stil) --------
+//  Die Rückwand wird von OBEN senkrecht eingeschoben. Ihre seitlichen Federn
+//  greifen in senkrechte Nuten, die in zwei MASSIVE hintere Eckpfosten gefräst
+//  sind (statt in eine dünne Seitenwand-Skin mit freistehendem Nut-Anschlag)
+//  -> robust, kein dünner Steg, der beim Stützen-Entfernen bricht.
 rear_wall_t    = 4.0; // Plattendicke (Y)
 rear_clear     = 0.3; // Spiel Rückwand rundum
-rear_tongue_w  = 2.5; // Feder-Breite der Rückwand (X-Eingriff, in die Wand-Nut)
+rear_tongue_w  = 2.5; // Feder-Breite der Rückwand (X-Eingriff, in die Pfosten-Nut)
 rear_lead      = 1.5; // Einführfase unten an der Rückwand-Feder
-rear_back_skin = 1.2; // Wand-Material HINTER der Nut -> Nut hinten ZU (Feder
-                      //   in Y gefangen, Rückwand sitzt fest statt lose)
 floor_groove_d = 1.5; // Boden-Nut-Tiefe für die Rückwand-Unterkante
-// (Wand-Skin außen = wall_t - rear_tongue_w - rear_clear = 2.2 mm)
+// hintere Eckpfosten (entstehen automatisch, da der gerundete Vollkörper die
+//   hinteren Ecken füllt; rear_cut fräst die Nut in den massiven Pfosten):
+rear_post_d    = 10.0; // Pfostentiefe in Y hinter der Rückwand (wie Kabelbox post_sz)
+// Die Rückwand-Feder (volle Plattentiefe rear_wall_t) gleitet in eine senkrechte Nut
+//   im massiven Pfosten; dahinter bleibt rear_post_d - rear_wall_t - rear_clear
+//   = 10 - 4 - 0,3 = 5,7 mm Vollmaterial -> Feder in Y gefangen, kein dünner Steg.
 
 // ---- Kabelloch in der Rückwand: nach UNTEN offen (Stecker passt durch) -
 cable_hole_w  = 12;   // Breite des Kabel-Schlitzes je Fach (X)
@@ -125,10 +130,10 @@ bays = [ for (i = [0 : n_bays - 1]) _baytype(_baysel[i]) ];
 // ---- abgeleitete Maße / Helfer (NICHT ändern) ----------------------
 inner_w = n_bays*bay_inner_w + (n_bays-1)*divider_t;
 outer_w = inner_w + 2*wall_t;
-outer_d = body_depth + 2*wall_t;
+outer_d = wall_t + body_depth + rear_post_d;         // Front-Wand + Fachtiefe + hintere Pfostenzone
 
-// Rückwand sitzt ganz hinten (im alten Rückwand-Bereich); Einsatz endet davor.
-rear_wall_y0 = outer_d - rear_wall_t;                // Vorderkante der Rückwand (Y)
+// Rückwand sitzt vor den Pfosten; dahinter die massive Pfostenzone (rear_post_d).
+rear_wall_y0 = outer_d - rear_post_d;                // Vorderkante der Rückwand (Y) = wall_t + body_depth
 insert_depth = rear_wall_y0 - rear_clear - wall_t;   // Einsatz-Tiefe (Front..Rückwand)
 
 function charger_h(fn, mk) =
@@ -293,129 +298,149 @@ voro_face_long = [
   [206.864,5.241,204.512,0.000]
 ];
 
-// voro_face_short: Rechteck 78.0 x 14.0 mm, 43 Segmente
+// voro_face_short: Rechteck 84.0 x 14.0 mm, 49 Segmente
 voro_face_short = [
-  [43.985,6.243,53.112,7.976],
-  [43.985,6.243,42.825,13.680],
-  [53.112,7.976,49.425,14.000],
-  [42.825,13.680,43.240,14.000],
-  [42.825,13.680,41.390,14.000],
-  [10.812,6.393,11.570,0.000],
-  [10.812,6.393,17.584,4.898],
-  [17.584,4.898,17.718,0.000],
-  [43.985,6.243,43.476,5.322],
-  [34.186,7.560,35.634,14.000],
-  [34.186,7.560,36.891,3.844],
-  [43.476,5.322,36.891,3.844],
-  [67.118,14.000,64.768,7.099],
-  [64.768,7.099,57.128,8.047],
-  [57.128,8.047,57.948,14.000],
-  [78.000,5.828,74.180,5.102],
-  [74.180,5.102,72.480,5.955],
-  [72.480,5.955,72.740,14.000],
-  [74.014,0.000,74.180,5.102],
-  [66.541,5.140,72.480,5.955],
-  [66.541,5.140,65.977,0.000],
-  [66.541,5.140,64.768,7.099],
-  [11.739,14.000,9.857,7.132],
-  [2.656,14.000,2.555,7.696],
-  [9.857,7.132,5.923,6.142],
-  [2.555,7.696,5.923,6.142],
-  [0.000,7.177,2.555,7.696],
-  [10.812,6.393,9.857,7.132],
-  [4.887,0.000,5.923,6.142],
-  [34.186,7.560,27.163,7.103],
-  [26.781,0.000,25.774,4.945],
-  [36.891,3.844,35.447,0.000],
-  [25.774,4.945,27.163,7.103],
-  [17.584,4.898,18.818,5.763],
-  [25.774,4.945,18.818,5.763],
-  [52.338,0.000,55.391,7.115],
-  [56.112,7.324,55.391,7.115],
-  [56.112,7.324,59.831,0.000],
-  [53.112,7.976,55.391,7.115],
-  [57.128,8.047,56.112,7.324],
-  [43.476,5.322,45.915,0.000],
-  [27.163,7.103,25.589,14.000],
-  [18.818,5.763,19.312,14.000]
+  [84.000,7.085,79.091,7.758],
+  [79.091,7.758,80.122,0.000],
+  [18.163,6.545,28.080,6.266],
+  [18.163,6.545,19.863,13.990],
+  [28.080,6.266,26.855,14.000],
+  [19.863,13.990,19.882,14.000],
+  [17.473,5.813,18.163,6.545],
+  [17.473,5.813,11.599,6.765],
+  [19.834,14.000,19.863,13.990],
+  [9.921,14.000,11.599,6.765],
+  [35.018,5.449,29.093,4.985],
+  [35.018,5.449,37.555,0.000],
+  [29.093,4.985,27.195,0.000],
+  [17.473,5.813,18.673,0.000],
+  [28.080,6.266,29.093,4.985],
+  [41.160,9.542,41.783,14.000],
+  [41.160,9.542,37.093,8.050],
+  [37.093,8.050,33.360,14.000],
+  [35.018,5.449,37.093,8.050],
+  [65.304,5.275,65.128,0.000],
+  [65.304,5.275,71.184,5.686],
+  [71.184,5.686,72.173,0.000],
+  [63.162,6.594,65.304,5.275],
+  [63.162,6.594,57.717,4.485],
+  [57.717,4.485,57.218,0.000],
+  [46.538,6.222,47.845,6.451],
+  [46.538,6.222,43.825,0.000],
+  [47.845,6.451,51.223,0.000],
+  [41.160,9.542,46.538,6.222],
+  [56.051,5.871,48.325,6.746],
+  [56.051,5.871,56.321,14.000],
+  [48.325,6.746,50.840,14.000],
+  [57.717,4.485,56.051,5.871],
+  [47.845,6.451,48.325,6.746],
+  [63.162,6.594,63.226,13.570],
+  [62.301,14.000,63.226,13.570],
+  [79.091,7.758,78.607,8.298],
+  [80.935,14.000,78.607,8.298],
+  [71.184,5.686,73.627,8.365],
+  [78.607,8.298,73.627,8.365],
+  [3.276,5.574,9.591,5.022],
+  [3.276,5.574,3.055,5.421],
+  [3.055,5.421,3.715,0.000],
+  [9.591,5.022,9.732,0.000],
+  [3.792,14.000,3.276,5.574],
+  [11.599,6.765,9.591,5.022],
+  [0.000,5.134,3.055,5.421],
+  [63.226,13.570,64.178,14.000],
+  [73.627,8.365,70.598,14.000]
 ];
 
-// voro_insert: Rechteck 57.0 x 78.0 mm, 71 Segmente
+// voro_insert: Rechteck 57.0 x 79.0 mm, 84 Segmente
 voro_insert = [
-  [35.316,39.819,37.321,37.492],
-  [35.316,39.819,37.741,52.637],
-  [37.321,37.492,47.796,35.183],
-  [37.741,52.637,48.107,53.380],
-  [47.796,35.183,49.207,37.039],
-  [49.207,37.039,51.902,50.074],
-  [51.902,50.074,48.107,53.380],
-  [57.000,50.493,51.902,50.074],
-  [57.000,37.455,49.207,37.039],
-  [50.370,25.442,57.000,23.303],
-  [50.370,25.442,47.796,35.183],
-  [53.003,8.203,57.000,11.810],
-  [53.003,8.203,52.540,0.000],
-  [49.850,65.283,46.419,69.671],
-  [49.850,65.283,57.000,65.667],
-  [46.419,69.671,51.509,78.000],
-  [48.107,53.380,49.850,65.283],
-  [7.275,44.723,0.000,37.531],
-  [7.275,44.723,14.174,38.027],
-  [14.174,38.027,5.126,25.468],
-  [0.000,27.186,5.126,25.468],
-  [32.893,26.269,28.397,22.606],
-  [32.893,26.269,47.953,23.339],
-  [28.397,22.606,36.327,10.827],
-  [36.327,10.827,43.620,15.030],
-  [43.620,15.030,47.953,23.339],
-  [50.370,25.442,47.953,23.339],
-  [37.321,37.492,32.893,26.269],
-  [53.003,8.203,43.620,15.030],
-  [14.174,38.027,19.921,36.609],
-  [19.921,36.609,22.527,25.799],
-  [5.126,25.468,7.016,23.140],
-  [22.527,25.799,7.016,23.140],
-  [23.958,39.975,19.921,36.609],
-  [23.958,39.975,35.316,39.819],
-  [28.397,22.606,24.659,23.337],
-  [22.527,25.799,24.659,23.337],
-  [37.741,52.637,36.253,53.942],
-  [46.419,69.671,40.715,70.374],
-  [36.253,53.942,37.058,67.488],
-  [40.715,70.374,37.058,67.488],
-  [40.715,70.374,37.558,78.000],
-  [36.253,53.942,23.880,55.366],
-  [37.058,67.488,23.454,68.617],
-  [23.454,68.617,23.880,55.366],
-  [23.958,39.975,23.329,54.845],
-  [23.329,54.845,23.880,55.366],
-  [6.238,11.111,8.260,13.063],
-  [6.238,11.111,6.521,0.000],
-  [8.260,13.063,17.310,12.034],
-  [19.882,0.000,19.628,8.438],
-  [17.310,12.034,19.628,8.438],
-  [0.000,11.351,6.238,11.111],
-  [7.016,23.140,8.260,13.063],
-  [24.659,23.337,17.310,12.034],
-  [36.327,10.827,36.155,10.193],
-  [36.155,10.193,19.628,8.438],
-  [32.387,0.000,36.952,1.918],
-  [38.936,0.000,36.952,1.918],
-  [36.155,10.193,36.952,1.918],
-  [7.275,44.723,6.136,51.610],
-  [0.000,53.325,6.136,51.610],
-  [23.329,54.845,7.769,53.074],
-  [6.136,51.610,7.769,53.074],
-  [23.454,68.617,20.706,72.270],
-  [7.769,53.074,10.219,68.834],
-  [20.706,72.270,10.219,68.834],
-  [20.706,72.270,21.848,78.000],
-  [0.000,70.793,8.224,69.948],
-  [8.224,69.948,7.195,78.000],
-  [10.219,68.834,8.224,69.948]
+  [0.000,72.754,5.210,72.672],
+  [5.210,72.672,6.730,71.460],
+  [6.730,71.460,8.123,60.556],
+  [0.000,61.509,8.123,60.556],
+  [8.308,79.000,5.210,72.672],
+  [17.599,79.000,19.310,71.867],
+  [19.310,71.867,6.730,71.460],
+  [0.000,45.682,6.312,43.758],
+  [10.060,59.330,8.123,60.556],
+  [10.060,59.330,7.883,45.322],
+  [6.312,43.758,7.883,45.322],
+  [57.000,42.860,51.714,42.379],
+  [57.000,31.505,49.360,30.993],
+  [51.714,42.379,49.360,30.993],
+  [10.060,59.330,20.947,63.304],
+  [19.310,71.867,21.929,68.230],
+  [21.929,68.230,20.947,63.304],
+  [21.929,68.230,33.984,73.375],
+  [34.191,79.000,33.984,73.375],
+  [33.737,0.000,36.830,1.490],
+  [36.830,1.490,38.199,0.000],
+  [7.883,45.322,23.361,47.310],
+  [20.947,63.304,23.478,59.402],
+  [23.478,59.402,23.849,47.834],
+  [23.849,47.834,23.361,47.310],
+  [33.984,73.375,35.780,72.118],
+  [35.780,72.118,47.904,74.200],
+  [47.904,74.200,48.408,79.000],
+  [49.717,55.894,46.873,60.235],
+  [49.717,55.894,48.239,45.800],
+  [48.239,45.800,37.570,44.950],
+  [46.873,60.235,40.328,61.129],
+  [37.570,44.950,36.298,46.216],
+  [36.298,46.216,37.004,58.090],
+  [40.328,61.129,37.004,58.090],
+  [57.000,56.347,49.717,55.894],
+  [52.323,69.154,57.000,69.614],
+  [52.323,69.154,46.873,60.235],
+  [51.714,42.379,48.239,45.800],
+  [48.082,29.012,37.056,31.730],
+  [48.082,29.012,49.360,30.993],
+  [37.056,31.730,35.474,33.869],
+  [35.474,33.869,37.570,44.950],
+  [35.780,72.118,40.328,61.129],
+  [52.323,69.154,47.904,74.200],
+  [35.474,33.869,23.921,34.048],
+  [23.921,34.048,23.361,47.310],
+  [23.849,47.834,36.298,46.216],
+  [23.478,59.402,37.004,58.090],
+  [57.000,9.612,52.914,4.929],
+  [57.000,18.998,50.079,21.452],
+  [52.914,4.929,44.356,13.049],
+  [44.356,13.049,47.307,18.708],
+  [47.307,18.708,50.079,21.452],
+  [52.636,0.000,52.914,4.929],
+  [48.082,29.012,50.079,21.452],
+  [36.228,7.737,44.356,13.049],
+  [36.228,7.737,36.830,1.490],
+  [37.056,31.730,33.336,22.303],
+  [33.336,22.303,47.307,18.708],
+  [19.659,5.706,17.790,9.379],
+  [19.659,5.706,35.991,7.933],
+  [17.790,9.379,24.205,19.245],
+  [35.991,7.933,29.077,18.203],
+  [29.077,18.203,24.205,19.245],
+  [19.831,0.000,19.659,5.706],
+  [36.228,7.737,35.991,7.933],
+  [33.336,22.303,29.077,18.203],
+  [6.312,43.758,6.965,39.808],
+  [0.000,31.316,6.965,39.808],
+  [0.000,8.806,6.260,8.531],
+  [6.260,8.531,6.478,0.000],
+  [8.143,10.615,17.790,9.379],
+  [8.143,10.615,6.260,8.531],
+  [7.152,18.640,22.253,21.849],
+  [7.152,18.640,5.559,20.979],
+  [5.559,20.979,13.684,32.257],
+  [13.684,32.257,20.169,30.490],
+  [20.169,30.490,22.253,21.849],
+  [8.143,10.615,7.152,18.640],
+  [24.205,19.245,22.253,21.849],
+  [0.000,23.061,5.559,20.979],
+  [6.965,39.808,13.684,32.257],
+  [23.921,34.048,20.169,30.490]
 ];
 
-voro_dims = [[247.00,24.00],[88.00,24.00],[57.00,78.00]];
+voro_dims = [[247.00,24.00],[94.00,24.00],[57.00,79.00]];
+
 
 // ============================ voronoi.scad ============================
 // =====================================================================
@@ -490,7 +515,7 @@ module rounded_block(w, d, h, r) {
 //   Band 3: "Mund" oben, schmaler -> stehenbleibende Lippe übergreift den Einsatz
 module bay_cutouts() {
     yb = wall_t;                 // Front-Innenkante (Frontwand bleibt Anschlag)
-    yd = outer_d + 1 - yb;       // nach hinten durchgehend offen
+    yd = rear_wall_y0 - yb;      // Hohlraum endet an der Rückwand-Vorderkante
     for (i = [0 : n_bays - 1]) {
         fn = bays[i][0]; mk = bays[i][1];
         x0 = wall_t + i * (bay_inner_w + divider_t);
@@ -507,27 +532,29 @@ module bay_cutouts() {
     }
 }
 
-// Rückwand-Aufnahme (Subtraktion): Plattenraum (volle Innenbreite, hinten/oben
-// offen) + zwei vertikale Feder-Nuten BÜNDIG in den dicken Seitenwänden
-// (kein Außenpfosten) + quer laufende Boden-Nut. Die Wand vor der Nut
-// (y < rear_wall_y0) bleibt stehen und fängt die Feder in Y.
+// Rückwand-Aufnahme (Subtraktion):
+//   - Plattenraum: volle Innenbreite, bis ganz nach HINTEN durchgehend offen
+//     -> hinter der Rückwand bleibt nur die offene Pfosten-Lücke (Trennwände
+//     enden vor der Rückwand, keine Stummel dahinter).
+//   - zwei senkrechte Feder-Nuten in den MASSIVEN Eckpfosten, auf Plattenhöhe (Y);
+//     hinter der Nut bleibt der volle Pfosten -> Feder in Y gefangen, robust.
+//   - quer laufende Boden-Nut für die Plattenunterkante.
 module rear_cut() {
-    // Plattenraum
+    // Plattenraum (bis zur Rückseite durchgehend -> öffnet die Pfosten-Lücke)
     translate([wall_t - rear_clear, rear_wall_y0 - rear_clear, floor_t])
-        cube([inner_w + 2*rear_clear, rear_wall_t + rear_clear + 1, body_height + 1]);
-    // seitliche Feder-Nuten (links/rechts): HINTEN GESCHLOSSEN (Wand-Skin
-    // rear_back_skin bleibt stehen) -> Feder in Y gefangen, Rückwand sitzt fest.
+        cube([inner_w + 2*rear_clear,
+              outer_d - rear_wall_y0 + rear_clear + 1, body_height + 1]);
+    // seitliche Feder-Nuten (links/rechts) IM Pfosten, auf Plattenhöhe (Y).
     xg0 = wall_t - rear_tongue_w - rear_clear;
-    gd  = rear_wall_t + rear_clear - rear_back_skin;   // Nuttiefe in Y (zu)
     for (sx = [0, 1]) {
         gx = (sx == 0) ? xg0 : (outer_w - wall_t);
         translate([gx, rear_wall_y0 - rear_clear, floor_t - floor_groove_d])
-            cube([rear_tongue_w + rear_clear, gd, body_height + 1]);
+            cube([rear_tongue_w + rear_clear, rear_wall_t + 2*rear_clear,
+                  body_height + 1]);
     }
-    // Boden-Nut quer (Plattenunterkante), ebenfalls hinten geschlossen
+    // Boden-Nut quer (Plattenunterkante)
     translate([wall_t - rear_tongue_w, rear_wall_y0, floor_t - floor_groove_d])
-        cube([inner_w + 2*rear_tongue_w, rear_wall_t - rear_back_skin,
-              floor_groove_d + 0.01]);
+        cube([inner_w + 2*rear_tongue_w, rear_wall_t, floor_groove_d + 0.01]);
 }
 
 module feet() {
@@ -538,19 +565,6 @@ module feet() {
             cylinder(h = foot_h + 2, r = foot_r, $fn = 36);
 }
 
-// Nut-Anschlag HINTEN: kleiner eckiger Block hinter jeder Feder-Nut, der die
-// (durch die Eckrundung weggefräste) Rückwand des Nut-Kanals wiederherstellt
-// -> Rückwand-Feder ist in Y gefangen. Wird NACH der Differenz vereinigt, damit
-// er voll massiv bleibt.
-module rear_stops() {
-    xg0 = wall_t - rear_tongue_w - rear_clear;
-    for (sx = [0, 1]) {
-        gx = (sx == 0) ? xg0 : (outer_w - wall_t);
-        translate([gx, outer_d - rear_back_skin, floor_t - floor_groove_d])
-            cube([rear_tongue_w + rear_clear, rear_back_skin,
-                  body_height - (floor_t - floor_groove_d)]);
-    }
-}
 
 // Rundungs-Hülle für den Korpus: rundet ALLE Oberkanten sauber mit R5 (auch die
 // eckig gefräste Nut-Oberkante hinten). XY um Relief-Aufmaß größer + nach unten weit
@@ -567,21 +581,18 @@ module _body_round_env() {
 
 module body() {
     intersection() {
-        union() {
-            difference() {
-                union() {
-                    rounded_block(outer_w, outer_d, body_height, fillet_r);
-                    feet();
-                    // Voronoi-Relief (eingerückt um fillet_r) auf Front + 2 Seiten
-                    // (Rückseite trägt die separate Rückwand -> dort eigenes Relief)
-                    relief_front(outer_w, body_height, voro_face_long,  voro_strut, relief_h, fillet_r);
-                    relief_left (outer_d, body_height, voro_face_short, voro_strut, relief_h, fillet_r);
-                    relief_right(outer_w, outer_d, body_height, voro_face_short, voro_strut, relief_h, fillet_r);
-                }
-                bay_cutouts();
-                rear_cut();
+        difference() {
+            union() {
+                rounded_block(outer_w, outer_d, body_height, fillet_r);
+                feet();
+                // Voronoi-Relief (eingerückt um fillet_r) auf Front + 2 Seiten
+                // (Rückseite trägt die separate Rückwand -> dort eigenes Relief)
+                relief_front(outer_w, body_height, voro_face_long,  voro_strut, relief_h, fillet_r);
+                relief_left (outer_d, body_height, voro_face_short, voro_strut, relief_h, fillet_r);
+                relief_right(outer_w, outer_d, body_height, voro_face_short, voro_strut, relief_h, fillet_r);
             }
-            rear_stops();
+            bay_cutouts();
+            rear_cut();
         }
         _body_round_env();
     }
@@ -709,7 +720,7 @@ phr = body_height - z0r;
 module rear_relief() {
     m = fillet_r;
     intersection() {
-        translate([outer_w - m, outer_d, m]) rotate([90, 0, 180])
+        translate([outer_w - m, rear_wall_y0 + rear_wall_t, m]) rotate([90, 0, 180])
             voro_slab(outer_w - 2*m, body_height - 2*m, voro_face_long, voro_strut, relief_h);
         translate([wall_t, rear_wall_y0 - 1, 0])           // auf Plattengröße clippen
             cube([inner_w, rear_wall_t + relief_h + 2, body_height]);
@@ -725,7 +736,7 @@ module rear_tongue(sx) {
     lo = min(xin, xout); hi = max(xin, xout);
     blo = (sx == 0) ? lo + rear_lead : lo;             // Fase: Boden outboard zurück
     bhi = (sx == 0) ? hi : hi - rear_lead;
-    td  = rear_wall_t - rear_back_skin - rear_clear;   // Feder-Tiefe (Y), zurückgesetzt
+    td  = rear_wall_t;                                 // Feder = volle Plattentiefe (Y)
     hull() {
         translate([lo, rear_wall_y0, z0r + rear_lead])
             cube([rear_tongue_w, td, phr - rear_lead]);

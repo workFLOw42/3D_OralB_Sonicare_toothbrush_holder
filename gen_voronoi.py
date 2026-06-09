@@ -26,7 +26,7 @@ def read_params(path):
     # abgeleitet (identisch zu params.scad)
     p["inner_w"] = p["n_bays"] * p["bay_inner_w"] + (p["n_bays"] - 1) * p["divider_t"]
     p["outer_w"] = p["inner_w"] + 2 * p["wall_t"]
-    p["outer_d"] = p["body_depth"] + 2 * p["wall_t"]
+    p["outer_d"] = p["wall_t"] + p["body_depth"] + p["rear_post_d"]
     return p
 
 

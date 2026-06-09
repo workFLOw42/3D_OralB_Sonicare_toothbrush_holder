@@ -13,7 +13,7 @@ bay_inner_w  = 57;    // Innenbreite je Fach in X (mm)
 divider_t    = 3;     // Trennwand zwischen Fächern (mm)
 wall_t       = 5.0;   // Außenwandstärke (mm) - dick genug für die bündige
                       //   senkrechte Rückwand-Nut in den Seitenwänden (statt Außenpfosten)
-body_depth   = 78;    // Innentiefe in Y (mm)
+body_depth   = 79;    // lichte Fachtiefe in Y (Front-Innenkante .. Rückwand-Vorderkante)
 floor_t      = 3.0;   // Bodenstärke (mm, jetzt geschlossen)
 // Wandhöhe = Boden + größte Ladestationshöhe -> Ladestation schließt bündig ab
 body_height  = 24;    // = floor_t(3) + Oral-B-Ladehöhe(21); bei Änderung anpassen
@@ -39,17 +39,22 @@ rail_thick    = 3.0;  // Höhe der Lippe/Feder (Z) — kräftiger, gut sichtbar
 rail_clear    = 0.25; // Spiel Feder <-> Lippe
 rail_cham     = 0.8;  // 45°-Fase (stützenfreier Druck der Lippen-Unterseite)
 
-// ---- separate Rückwand (von oben senkrecht in die Seitenwände) -----
-//  Die senkrechte Nut liegt BÜNDIG in den (dicken) Seitenwänden -> keine
-//  Außenpfosten. Einsatz läuft innerhalb wall_t, Nut außerhalb -> kollisionsfrei.
+// ---- separate Rückwand + hintere Eckpfosten (Kabelbox-Stil) --------
+//  Die Rückwand wird von OBEN senkrecht eingeschoben. Ihre seitlichen Federn
+//  greifen in senkrechte Nuten, die in zwei MASSIVE hintere Eckpfosten gefräst
+//  sind (statt in eine dünne Seitenwand-Skin mit freistehendem Nut-Anschlag)
+//  -> robust, kein dünner Steg, der beim Stützen-Entfernen bricht.
 rear_wall_t    = 4.0; // Plattendicke (Y)
 rear_clear     = 0.3; // Spiel Rückwand rundum
-rear_tongue_w  = 2.5; // Feder-Breite der Rückwand (X-Eingriff, in die Wand-Nut)
+rear_tongue_w  = 2.5; // Feder-Breite der Rückwand (X-Eingriff, in die Pfosten-Nut)
 rear_lead      = 1.5; // Einführfase unten an der Rückwand-Feder
-rear_back_skin = 1.2; // Wand-Material HINTER der Nut -> Nut hinten ZU (Feder
-                      //   in Y gefangen, Rückwand sitzt fest statt lose)
 floor_groove_d = 1.5; // Boden-Nut-Tiefe für die Rückwand-Unterkante
-// (Wand-Skin außen = wall_t - rear_tongue_w - rear_clear = 2.2 mm)
+// hintere Eckpfosten (entstehen automatisch, da der gerundete Vollkörper die
+//   hinteren Ecken füllt; rear_cut fräst die Nut in den massiven Pfosten):
+rear_post_d    = 10.0; // Pfostentiefe in Y hinter der Rückwand (wie Kabelbox post_sz)
+// Die Rückwand-Feder (volle Plattentiefe rear_wall_t) gleitet in eine senkrechte Nut
+//   im massiven Pfosten; dahinter bleibt rear_post_d - rear_wall_t - rear_clear
+//   = 10 - 4 - 0,3 = 5,7 mm Vollmaterial -> Feder in Y gefangen, kein dünner Steg.
 
 // ---- Kabelloch in der Rückwand: nach UNTEN offen (Stecker passt durch) -
 cable_hole_w  = 12;   // Breite des Kabel-Schlitzes je Fach (X)
@@ -108,10 +113,10 @@ bays = [ for (i = [0 : n_bays - 1]) _baytype(_baysel[i]) ];
 // ---- abgeleitete Maße / Helfer (NICHT ändern) ----------------------
 inner_w = n_bays*bay_inner_w + (n_bays-1)*divider_t;
 outer_w = inner_w + 2*wall_t;
-outer_d = body_depth + 2*wall_t;
+outer_d = wall_t + body_depth + rear_post_d;         // Front-Wand + Fachtiefe + hintere Pfostenzone
 
-// Rückwand sitzt ganz hinten (im alten Rückwand-Bereich); Einsatz endet davor.
-rear_wall_y0 = outer_d - rear_wall_t;                // Vorderkante der Rückwand (Y)
+// Rückwand sitzt vor den Pfosten; dahinter die massive Pfostenzone (rear_post_d).
+rear_wall_y0 = outer_d - rear_post_d;                // Vorderkante der Rückwand (Y) = wall_t + body_depth
 insert_depth = rear_wall_y0 - rear_clear - wall_t;   // Einsatz-Tiefe (Front..Rückwand)
 
 function charger_h(fn, mk) =

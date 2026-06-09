@@ -67,8 +67,9 @@ zustande kommen, ist transparent in [`MEASUREMENTS.md`](MEASUREMENTS.md) dokumen
   - **Laden**: Öffnung für die lose eingestellte Ladestation, die oben
     **flächenbündig mit dem Gitter** abschließt.
 - **Rückwand** = separate Platte mit Voronoi-Relief, **von oben senkrecht** in zwei
-  senkrechte Nuten in den (dicken) Seitenwänden + Boden-Nut eingeschoben (bündig,
-  ohne Außenstege). Sichert die Einsätze und trägt
+  senkrechte Nuten eingeschoben, die in **zwei massiven hinteren Eckpfosten**
+  (`rear_post_d`=10 mm, Kabelbox-Stil) + eine Boden-Nut sitzen. Hinter der Nut steht
+  der volle Pfosten → Rückwand sitzt **fest**. Sichert die Einsätze und trägt
   je Fach ein **kleines gerundetes Kabelloch** (12×9 mm).
 - **Modular**: jedes Fach frei mit jedem passenden Gitter bestückbar; weitere
   Gitter-Varianten lassen sich leicht ergänzen.
@@ -109,14 +110,14 @@ in den Fächern sind davon unabhängig.)*
 ## Maße
 | | Wert |
 |---|---|
-| Korpus außen (inkl. Relief) | **249,8 × 88,4 × 24 mm** |
+| Korpus außen (inkl. Relief) | **249,8 × 94,4 × 24 mm** |
 | + Füße | 5 mm → Gesamthöhe **29 mm** |
-| Fach innen | 57 × 78 mm |
-| Wandstärke | **5 mm** (Seitenwände, für bündige Rückwand-Nut) · Boden 3 mm · Trennwand 3 mm |
+| Fach innen | 57 × 79 mm |
+| Wandstärke | **5 mm** (Seitenwände) · zwei massive hintere Eckpfosten (10 mm) für die Rückwand-Nut · Boden 3 mm · Trennwand 3 mm |
 | Kanten-/Eckradius | **R5 mm** (alle Außenkanten) |
 | Füße (4×) | Ø10 mm, 5 mm hoch, Mitte 10 mm von den Rändern |
 | Einsatz-Gitter | 56,2 × ~79 × 6 mm + Zapfen/Öffnung |
-| Druckplatte (alle Teile) | 249,8 × 183,7 mm → passt auf Bambu **X2D (256×256)** |
+| Druckplatte (alle Teile) | 249,8 × 190,6 mm → passt auf Bambu **X2D (256×256)** |
 
 **Aus echten Referenzteilen gemessen** (Details → [Herkunft der Maße](#herkunft-der-maße)):
 
@@ -156,10 +157,12 @@ geschlossenen Boden ab (Belüftung/Abtropfen, definierte Auflage).
 
 ### Einschiebbare Rückwand & Kabellöcher
 Die Rückseite ist offen; eine **separate Rückwand** wird von oben senkrecht in zwei
-senkrechte **Nuten bündig in den dicken Seitenwänden** (`wall_t`=5 mm) und eine
-**Boden-Nut** (`floor_groove_d`) geschoben – keine Außenstege. Die Nut ist **hinten
-geschlossen** (`rear_back_skin` + Nut-Anschlag) → die Feder ist in Y gefangen, die
-Rückwand sitzt **fest** (nur senkrecht entnehmbar, fällt nicht hinten heraus). Sie
+senkrechte **Nuten** geschoben, die in **zwei massiven hinteren Eckpfosten**
+(`rear_post_d`=10 mm, Kabelbox-Stil) sitzen, plus eine **Boden-Nut** (`floor_groove_d`).
+Hinter der Nut steht der **volle Pfosten** (~5,7 mm Vollmaterial) → die Feder ist in Y
+gefangen, die Rückwand sitzt **fest** (nur senkrecht entnehmbar, fällt nicht hinten
+heraus). *(Bis v1.0 lag die Nut bündig in der Seitenwand mit einem nur 1,2 mm dünnen
+Anschlag, der beim Stützen-Entfernen brach – die massiven Pfosten beheben das.)* Sie
 sichert die von hinten eingeschobenen Einsätze
 gegen Herausrutschen, trägt das Voronoi-Relief der Rückseite und hat je Fach einen
 **nach unten offenen Kabel-Schlitz** (`cable_hole_w` breit, gerundete Oberkante) –
@@ -268,7 +271,7 @@ Alle Werte in `params.scad`. „⟳" = nach Änderung `gen_voronoi.py` neu ausf�
 | `bay_inner_w` | 57 | Fach-Innenbreite X (mm) | ⟳ |
 | `divider_t` | 3 | Trennwand zwischen Fächern | ⟳ |
 | `wall_t` | 5 | Außenwandstärke (dick für bündige Rückwand-Nut) | ⟳ |
-| `body_depth` | 78 | Fach-/Innentiefe Y | ⟳ |
+| `body_depth` | 79 | lichte Fachtiefe Y (Front..Rückwand) | ⟳ |
 | `floor_t` | 3 | Bodenstärke | |
 | `body_height` | 24 | Wandhöhe (= Boden + Oral-B-Ladehöhe) | ⟳ |
 | `insert_h` | 6 | Dicke der Einsatzgitter | |
@@ -280,8 +283,8 @@ Alle Werte in `params.scad`. „⟳" = nach Änderung `gen_voronoi.py` neu ausf�
 | `rail_thick` | 3 | Höhe der Lippe/Feder (Z) | |
 | `rail_clear` | 0,25 | Spiel Feder↔Lippe | |
 | `rear_wall_t` | 4 | Dicke der separaten Rückwand | |
-| `rear_back_skin` | 1,2 | Wand hinter der Nut → Nut hinten zu (Rückwand sitzt fest) | |
-| `rear_tongue_w` / `rear_lead` | 2,5 / 1,5 | Rückwand-Federbreite (in Wand-Nut) / Einführfase | |
+| `rear_post_d` | 10 | Tiefe der hinteren Eckpfosten in Y (tragen die Rückwand-Nut) | ⟳ |
+| `rear_tongue_w` / `rear_lead` | 2,5 / 1,5 | Rückwand-Federbreite (in Pfosten-Nut) / Einführfase | |
 | `floor_groove_d` | 1,5 | Boden-Nut-Tiefe für die Rückwand | |
 | `rear_clear` | 0,3 | Spiel Rückwand | |
 | `cable_hole_w` / `cable_hole_h` | 12 / 11 | Kabel-Schlitz Breite / Oberkante über Boden (**unten offen**) | |
