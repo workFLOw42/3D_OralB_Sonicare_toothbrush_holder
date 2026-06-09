@@ -4,8 +4,8 @@
 //   - geschlossenem Boden; HINTEN offen für die einschiebbare Rückwand
 //   - Feder-&-Nut-Schiebehaltung der Einsätze: seitliche Lippen an der
 //     Fach-Oberkante (Einsatz von hinten einschieben, Frontwand = Anschlag)
-//   - zwei MASSIVE hintere Eckpfosten (Kabelbox-Stil, rear_post_d tief). Die
-//     senkrechte Rückwand-Nut sitzt auf Plattenhöhe; DAHINTER bleibt der volle
+//   - zwei MASSIVE hintere Eckpfosten (Kabelbox-Stil, rear_wall_t tief). Die
+//     senkrechte Rückwand füllt sie bündig; ihre Feder greift VORN in die Nut, DAHINTER der volle
 //     Pfosten stehen (~5,7 mm) -> Feder in Y gefangen, kein dünner Steg/Anschlag,
 //     der beim Stützen-Entfernen bricht.
 //   - 4 Füßen; Voronoi-Relief (eingerückt) auf Front + 2 Seiten
@@ -47,10 +47,9 @@ module bay_cutouts() {
 }
 
 // Rückwand-Aufnahme (Subtraktion):
-//   - Plattenraum: volle Innenbreite, von der Rückwand-Vorderkante bis ganz nach
-//     HINTEN durchgehend offen -> hinter der Rückwand bleibt nur die offene
-//     Pfosten-Lücke (Trennwände enden vor der Rückwand, keine Stummel dahinter).
-//   - zwei senkrechte Feder-Nuten in den MASSIVEN Eckpfosten, auf Plattenhöhe (Y).
+//   - Plattenraum: volle Innenbreite bis zur Rückseite -> die rear_wall_t tiefe
+//     Rückwand füllt ihn bündig; Trennwände enden vor der Rückwand (keine Stummel).
+//   - zwei senkrechte Feder-Nuten VORN in den MASSIVEN Eckpfosten (nur rear_tongue_d tief).
 //     Hinter der Nut bleibt der volle Pfosten stehen -> Feder in Y gefangen, robust.
 //   - quer laufende Boden-Nut für die Plattenunterkante.
 module rear_cut() {
@@ -58,12 +57,12 @@ module rear_cut() {
     translate([wall_t - rear_clear, rear_wall_y0 - rear_clear, floor_t])
         cube([inner_w + 2*rear_clear,
               outer_d - rear_wall_y0 + rear_clear + 1, body_height + 1]);
-    // seitliche Feder-Nuten (links/rechts) IM Pfosten, auf Plattenhöhe (Y).
+    // seitliche Feder-Nuten (links/rechts) VORN im Pfosten (nur rear_tongue_d tief).
     xg0 = wall_t - rear_tongue_w - rear_clear;
     for (sx = [0, 1]) {
         gx = (sx == 0) ? xg0 : (outer_w - wall_t);
         translate([gx, rear_wall_y0 - rear_clear, floor_t - floor_groove_d])
-            cube([rear_tongue_w + rear_clear, rear_wall_t + 2*rear_clear,
+            cube([rear_tongue_w + rear_clear, rear_tongue_d + 2*rear_clear,
                   body_height + 1]);
     }
     // Boden-Nut quer (Plattenunterkante)

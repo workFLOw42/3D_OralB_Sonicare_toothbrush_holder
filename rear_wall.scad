@@ -40,7 +40,7 @@ module rear_tongue(sx) {
     lo = min(xin, xout); hi = max(xin, xout);
     blo = (sx == 0) ? lo + rear_lead : lo;             // Fase: Boden outboard zurück
     bhi = (sx == 0) ? hi : hi - rear_lead;
-    td  = rear_wall_t;                                 // Feder = volle Plattentiefe (Y)
+    td  = rear_tongue_d;                               // Feder-Tiefe (Y) vorn -> Pfosten-Nut
     hull() {
         translate([lo, rear_wall_y0, z0r + rear_lead])
             cube([rear_tongue_w, td, phr - rear_lead]);
