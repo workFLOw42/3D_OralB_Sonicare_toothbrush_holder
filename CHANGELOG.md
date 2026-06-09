@@ -3,7 +3,7 @@
 Versionshistorie des frei konfigurierbaren Zahnbürstenhalters. Format angelehnt an
 [Keep a Changelog](https://keepachangelog.com/de/). Maße in mm.
 
-## [1.1] – 2026-06-09 · Robuste hintere Eckpfosten
+## [1.1] – 2026-06-09 · Robuste, bündige hintere Eckpfosten
 
 ### Geändert / Behoben
 - **Rückwand-Halterung neu konstruiert** (Kabelbox-Stil): Die senkrechten Nuten sitzen
@@ -11,11 +11,13 @@ Versionshistorie des frei konfigurierbaren Zahnbürstenhalters. Format angelehnt
   Behebt den **Bruch der fragilen Nut-Anschläge** beim Entfernen der Stützstrukturen
   (Probedruck v1.0) – hinter der Nut steht jetzt **~5,7 mm Vollmaterial** (vorher 1,2 mm
   freistehender Steg). Modul `rear_stops()` entfällt.
-- **Gehäuse +6 mm tiefer in Y**: `body_depth` 78 → 79, neue Pfostentiefe `rear_post_d`=10.
-  Korpus außen **249,8 × 94,4 × 24 mm** (X unverändert). Fach-/Einsatz-Tiefe bleibt
-  **78,7 mm** (Ladestationen behalten ihren Platz). Plattenlayout **249,8 × 190,6 mm**
+- **Rückwand bündig**: Rückwand jetzt **10 mm tief** (`rear_wall_t`), schließt hinten
+  **bündig mit den Pfosten** ab; **Feder vorn** (`rear_tongue_d`=4 mm) greift in die
+  Pfosten-Nut. Voronoi-Relief läuft durchgehend über die Rückseite.
+- **Gehäuse +6 mm tiefer in Y**: `body_depth` 78 → 79. Korpus außen **249,8 × 94,4 × 24 mm**
+  (X unverändert). Fach-/Einsatz-Tiefe bleibt **78,7 mm**. Plattenlayout **249,8 × 196,6 mm**
   (< 256 × 256, Bambu X2D).
-- **Parameter**: `rear_post_d` neu (⟳ – Seitenrelief wird größer); `rear_back_skin` entfällt.
+- **Parameter**: `rear_wall_t` 4 → 10, `rear_tongue_d`=4 neu; `rear_back_skin` entfällt.
 - Voronoi-Seitenrelief neu erzeugt (Seitenflächen 78 → 84 mm). Alle STL/3MF neu gebaut;
   MakerWorld-Einzeldatei gespiegelt.
 

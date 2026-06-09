@@ -66,11 +66,11 @@ zustande kommen, ist transparent in [`MEASUREMENTS.md`](MEASUREMENTS.md) dokumen
   - **Ständer**: zentraler **Zapfen** – die Bürste wird aufgesteckt.
   - **Laden**: Öffnung für die lose eingestellte Ladestation, die oben
     **flächenbündig mit dem Gitter** abschließt.
-- **Rückwand** = separate Platte mit Voronoi-Relief, **von oben senkrecht** in zwei
-  senkrechte Nuten eingeschoben, die in **zwei massiven hinteren Eckpfosten**
-  (`rear_post_d`=10 mm, Kabelbox-Stil) + eine Boden-Nut sitzen. Hinter der Nut steht
-  der volle Pfosten → Rückwand sitzt **fest**. Sichert die Einsätze und trägt
-  je Fach ein **kleines gerundetes Kabelloch** (12×9 mm).
+- **Rückwand** = separate Platte (10 mm tief, **bündig** mit den hinteren Eckpfosten)
+  mit Voronoi-Relief, **von oben senkrecht** eingeschoben. Ihre **Feder vorn**
+  (`rear_tongue_d`) greift in eine senkrechte Nut in den **massiven Eckpfosten**
+  (Kabelbox-Stil) + Boden-Nut; dahinter ~5,7 mm Vollmaterial → sitzt **fest**. Sichert
+  die Einsätze und trägt je Fach ein **kleines gerundetes Kabelloch** (12×9 mm).
 - **Modular**: jedes Fach frei mit jedem passenden Gitter bestückbar; weitere
   Gitter-Varianten lassen sich leicht ergänzen.
 - **Montage**: Ladestation in den Lade-Einsatz legen → Einsätze (inkl. Station) von
@@ -117,7 +117,7 @@ in den Fächern sind davon unabhängig.)*
 | Kanten-/Eckradius | **R5 mm** (alle Außenkanten) |
 | Füße (4×) | Ø10 mm, 5 mm hoch, Mitte 10 mm von den Rändern |
 | Einsatz-Gitter | 56,2 × ~79 × 6 mm + Zapfen/Öffnung |
-| Druckplatte (alle Teile) | 249,8 × 190,6 mm → passt auf Bambu **X2D (256×256)** |
+| Druckplatte (alle Teile) | 249,8 × 196,6 mm → passt auf Bambu **X2D (256×256)** |
 
 **Aus echten Referenzteilen gemessen** (Details → [Herkunft der Maße](#herkunft-der-maße)):
 
@@ -156,14 +156,14 @@ eingerückt (sitzt auf den flachen Bändern). Vier Füße (`foot_*`) heben den
 geschlossenen Boden ab (Belüftung/Abtropfen, definierte Auflage).
 
 ### Einschiebbare Rückwand & Kabellöcher
-Die Rückseite ist offen; eine **separate Rückwand** wird von oben senkrecht in zwei
-senkrechte **Nuten** geschoben, die in **zwei massiven hinteren Eckpfosten**
-(`rear_post_d`=10 mm, Kabelbox-Stil) sitzen, plus eine **Boden-Nut** (`floor_groove_d`).
-Hinter der Nut steht der **volle Pfosten** (~5,7 mm Vollmaterial) → die Feder ist in Y
-gefangen, die Rückwand sitzt **fest** (nur senkrecht entnehmbar, fällt nicht hinten
-heraus). *(Bis v1.0 lag die Nut bündig in der Seitenwand mit einem nur 1,2 mm dünnen
-Anschlag, der beim Stützen-Entfernen brach – die massiven Pfosten beheben das.)* Sie
-sichert die von hinten eingeschobenen Einsätze
+Die Rückseite ist offen; eine **separate Rückwand** (10 mm tief, **bündig** mit den
+hinteren Eckpfosten) wird von oben senkrecht eingeschoben. Ihre **Feder vorn**
+(`rear_tongue_d`=4 mm) greift in eine senkrechte **Nut** in den **massiven Eckpfosten**
+(Kabelbox-Stil) plus eine **Boden-Nut** (`floor_groove_d`). Hinter der Feder stehen
+**~5,7 mm Vollmaterial** (weit weg von der gerundeten Hinterkante) → die Feder ist in Y
+gefangen, die Rückwand sitzt **fest** (nur senkrecht entnehmbar). *(Bis v1.0 lag die Nut
+in der dünnen Seitenwand mit nur 1,2 mm Anschlag, der beim Stützen-Entfernen brach – die
+massiven Pfosten beheben das.)* Sie sichert die von hinten eingeschobenen Einsätze
 gegen Herausrutschen, trägt das Voronoi-Relief der Rückseite und hat je Fach einen
 **nach unten offenen Kabel-Schlitz** (`cable_hole_w` breit, gerundete Oberkante) –
 so passt auch der **Stecker** durch (Rückwand wird beim Einschieben über das Kabel
@@ -282,8 +282,8 @@ Alle Werte in `params.scad`. „⟳" = nach Änderung `gen_voronoi.py` neu ausf�
 | `rail_overhang` | 2 | Lippen-Überstand nach innen (Feder-Eingriff); max ~2,5 (Sonicare-Öffnung) | |
 | `rail_thick` | 3 | Höhe der Lippe/Feder (Z) | |
 | `rail_clear` | 0,25 | Spiel Feder↔Lippe | |
-| `rear_wall_t` | 4 | Dicke der separaten Rückwand | |
-| `rear_post_d` | 10 | Tiefe der hinteren Eckpfosten in Y (tragen die Rückwand-Nut) | ⟳ |
+| `rear_wall_t` | 10 | Rückwand-/Pfostentiefe Y (Rückwand bündig mit Pfosten) | ⟳ |
+| `rear_tongue_d` | 4 | Feder-Tiefe Y vorn (Eingriff in die Pfosten-Nut) | |
 | `rear_tongue_w` / `rear_lead` | 2,5 / 1,5 | Rückwand-Federbreite (in Pfosten-Nut) / Einführfase | |
 | `floor_groove_d` | 1,5 | Boden-Nut-Tiefe für die Rückwand | |
 | `rear_clear` | 0,3 | Spiel Rückwand | |

@@ -57,21 +57,18 @@ rail_clear    = 0.25; // Spiel Feder <-> Lippe
 rail_cham     = 0.8;  // 45°-Fase (stützenfreier Druck der Lippen-Unterseite)
 
 // ---- separate Rückwand + hintere Eckpfosten (Kabelbox-Stil) --------
-//  Die Rückwand wird von OBEN senkrecht eingeschoben. Ihre seitlichen Federn
-//  greifen in senkrechte Nuten, die in zwei MASSIVE hintere Eckpfosten gefräst
-//  sind (statt in eine dünne Seitenwand-Skin mit freistehendem Nut-Anschlag)
-//  -> robust, kein dünner Steg, der beim Stützen-Entfernen bricht.
-rear_wall_t    = 4.0; // Plattendicke (Y)
-rear_clear     = 0.3; // Spiel Rückwand rundum
-rear_tongue_w  = 2.5; // Feder-Breite der Rückwand (X-Eingriff, in die Pfosten-Nut)
-rear_lead      = 1.5; // Einführfase unten an der Rückwand-Feder
-floor_groove_d = 1.5; // Boden-Nut-Tiefe für die Rückwand-Unterkante
-// hintere Eckpfosten (entstehen automatisch, da der gerundete Vollkörper die
-//   hinteren Ecken füllt; rear_cut fräst die Nut in den massiven Pfosten):
-rear_post_d    = 10.0; // Pfostentiefe in Y hinter der Rückwand (wie Kabelbox post_sz)
-// Die Rückwand-Feder (volle Plattentiefe rear_wall_t) gleitet in eine senkrechte Nut
-//   im massiven Pfosten; dahinter bleibt rear_post_d - rear_wall_t - rear_clear
-//   = 10 - 4 - 0,3 = 5,7 mm Vollmaterial -> Feder in Y gefangen, kein dünner Steg.
+//  Die Rückwand ist so TIEF wie die hinteren Eckpfosten (rear_wall_t) -> hinten
+//  BÜNDIG mit den Pfosten. Sie wird von OBEN senkrecht eingeschoben; ihre
+//  seitliche Feder (rear_tongue_d tief, VORN an der Platte) greift in eine
+//  senkrechte Nut in den massiven Pfosten. Dahinter steht rear_wall_t -
+//  rear_tongue_d - rear_clear = 10 - 4 - 0,3 = 5,7 mm Vollmaterial (weit weg von
+//  der gerundeten Hinterkante) -> Feder in Y gefangen, robust, kein dünner Steg.
+rear_wall_t    = 10.0; // Platten-/Pfostentiefe (Y) -> Rückwand bündig mit Pfosten
+rear_clear     = 0.3;  // Spiel Rückwand rundum
+rear_tongue_w  = 2.5;  // Feder-Breite der Rückwand (X-Eingriff, in die Pfosten-Nut)
+rear_tongue_d  = 4.0;  // Feder-Tiefe (Y) vorn an der Platte -> Eingriff in die Pfosten-Nut
+rear_lead      = 1.5;  // Einführfase unten an der Rückwand-Feder
+floor_groove_d = 1.5;  // Boden-Nut-Tiefe für die Rückwand-Unterkante
 
 // ---- Kabelloch in der Rückwand: nach UNTEN offen (Stecker passt durch) -
 cable_hole_w  = 12;   // Breite des Kabel-Schlitzes je Fach (X)
@@ -130,10 +127,10 @@ bays = [ for (i = [0 : n_bays - 1]) _baytype(_baysel[i]) ];
 // ---- abgeleitete Maße / Helfer (NICHT ändern) ----------------------
 inner_w = n_bays*bay_inner_w + (n_bays-1)*divider_t;
 outer_w = inner_w + 2*wall_t;
-outer_d = wall_t + body_depth + rear_post_d;         // Front-Wand + Fachtiefe + hintere Pfostenzone
+outer_d = wall_t + body_depth + rear_wall_t;         // Front-Wand + Fachtiefe + bündige Rückwand/Pfosten
 
-// Rückwand sitzt vor den Pfosten; dahinter die massive Pfostenzone (rear_post_d).
-rear_wall_y0 = outer_d - rear_post_d;                // Vorderkante der Rückwand (Y) = wall_t + body_depth
+// Rückwand füllt die Pfostenzone bündig; ihre Feder greift vorn in die Pfosten-Nut.
+rear_wall_y0 = outer_d - rear_wall_t;                // Vorderkante der Rückwand (Y) = wall_t + body_depth
 insert_depth = rear_wall_y0 - rear_clear - wall_t;   // Einsatz-Tiefe (Front..Rückwand)
 
 function charger_h(fn, mk) =
@@ -549,7 +546,7 @@ module rear_cut() {
     for (sx = [0, 1]) {
         gx = (sx == 0) ? xg0 : (outer_w - wall_t);
         translate([gx, rear_wall_y0 - rear_clear, floor_t - floor_groove_d])
-            cube([rear_tongue_w + rear_clear, rear_wall_t + 2*rear_clear,
+            cube([rear_tongue_w + rear_clear, rear_tongue_d + 2*rear_clear,
                   body_height + 1]);
     }
     // Boden-Nut quer (Plattenunterkante)
@@ -736,7 +733,7 @@ module rear_tongue(sx) {
     lo = min(xin, xout); hi = max(xin, xout);
     blo = (sx == 0) ? lo + rear_lead : lo;             // Fase: Boden outboard zurück
     bhi = (sx == 0) ? hi : hi - rear_lead;
-    td  = rear_wall_t;                                 // Feder = volle Plattentiefe (Y)
+    td  = rear_tongue_d;                               // Feder-Tiefe (Y) vorn -> Pfosten-Nut
     hull() {
         translate([lo, rear_wall_y0, z0r + rear_lead])
             cube([rear_tongue_w, td, phr - rear_lead]);
