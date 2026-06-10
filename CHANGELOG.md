@@ -3,7 +3,7 @@
 Versionshistorie des frei konfigurierbaren Zahnbürstenhalters. Format angelehnt an
 [Keep a Changelog](https://keepachangelog.com/de/). Maße in mm.
 
-## [1.1] – 2026-06-09 · Robuste, bündige hintere Eckpfosten
+## [1.1] – 2026-06-10 · Robuste hintere Eckpfosten + Geräte-Passung
 
 ### Geändert / Behoben
 - **Rückwand-Halterung neu konstruiert** (Kabelbox-Stil): Die senkrechten Nuten sitzen
@@ -20,6 +20,17 @@ Versionshistorie des frei konfigurierbaren Zahnbürstenhalters. Format angelehnt
 - **Parameter**: `rear_wall_t` 4 → 10, `rear_tongue_d`=4 neu; `rear_back_skin` entfällt.
 - Voronoi-Seitenrelief neu erzeugt (Seitenflächen 78 → 84 mm). Alle STL/3MF neu gebaut;
   MakerWorld-Einzeldatei gespiegelt.
+
+### Geändert · Geräte-Passung (Maße)
+- **Sonicare-Ladeöffnung** an das reale Ladegerät angepasst: **40 × 55 mm**
+  (vorher 51 × 63 mm), vorne voller **Halbkreis Ø40 mm**.
+  `son_charger_x` 51 → 40, `son_charger_y` 63 → 55.
+- **Sonicare-Ständer-Zapfen** auf **Ø5 mm** reduziert (`son_peg_d` 7 → 5).
+- **Oral-B-Ladeöffnung** weitet sich jetzt **zur Unterseite hin im 45°-Winkel**
+  auf (Einführtrichter; oben unverändert passgenau) – das Ladegerät lässt sich
+  unten leichter einstellen. Neues Modul `charge_cut()` in `grid.scad`.
+- STL `grid1/2/3`, 3MF und Vorschaubilder (`doc_iso`, `doc_top`, `assembly_back`)
+  neu gebaut; MakerWorld-Einzeldatei gespiegelt.
 
 ---
 ## [1.0] – 2026-06-07 · Erste Veröffentlichung

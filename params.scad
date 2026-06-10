@@ -4,7 +4,7 @@
 //  Eigenentwicklung; nur die funktionalen Schnittstellenmaße an
 //  Oral-B-/Sonicare-Referenzteilen vermessen (Geräte-Passung):
 //    - Oral-B Cavity-Tiefe ~21 mm, Ladeöffnung oval 42x55, Zapfen 8x9,6->7,5x9
-//    - Sonicare Ladestation 63 x 51 mm (D-Form), Höhe 20 mm (Holder_v2)
+//    - Sonicare Ladeöffnung 40 x 55 mm (D-Form, Halbkreis vorne), Höhe 20 mm
 // =====================================================================
 
 // ---- Korpus (Wanne) -------------------------------------------------
@@ -70,9 +70,9 @@ charger_h_son = 20;   // Sonicare Ladestationshöhe (gemessen)
 // Oral-B Ladeöffnung: OVAL (Ellipse), aus chargeur-Gitter gemessen
 orb_charger_x = 42;     // oval Breite (X, quer)
 orb_charger_y = 55;     // oval Länge (Y)
-// Sonicare: echte D-Kontur (quer ins Fach, 51 mm in X)
-son_charger_x = 51;     // D-Breite (X, quer)   -> passt in 57er Fach
-son_charger_y = 63;     // D-Länge (Y)
+// Sonicare: D-Kontur (quer ins Fach). Vorne voller Halbkreis (Ø = Breite 40).
+son_charger_x = 40;     // D-Breite (X, quer) = Durchmesser des Front-Halbkreises
+son_charger_y = 55;     // D-Tiefe (Y)
 son_charger_fit = 1.0;  // Spiel rundum für die Ladestation (mm)
 
 // ---- Ständer-Zapfen je Marke (Bürste aufstecken) -------------------
@@ -81,8 +81,8 @@ son_charger_fit = 1.0;  // Spiel rundum für die Ladestation (mm)
 orb_peg_base = [8, 9.6];    // [X quer, Y längs] am Fuß
 orb_peg_tip  = [7.5, 9];    // an der Spitze (leichte Verjüngung)
 orb_peg_h    = 12.5;        // Schafthöhe über dem Einsatz
-// Sonicare: runder Zapfen Ø7 (gemessen ~6,8)
-son_peg_d    = 7;
+// Sonicare: runder Zapfen Ø5 (gewuenscht; Referenz gemessen ~6,8)
+son_peg_d    = 5;
 son_peg_h    = 10;
 peg_collar   = 2.5;       // ovaler/runder Sockel-Überstand am Fuß
 peg_chamfer  = 0.8;       // kleine Fase an der Zapfenspitze

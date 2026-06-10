@@ -30,6 +30,25 @@ module charge_open_2d(mk, grow = 0) {
         resize([orb_charger_x + 2*grow, orb_charger_y + 2*grow]) circle(d = 100);
 }
 
+// Lade-Öffnung als 3D-Schnittkörper.
+//   Sonicare: gerader, senkrechter Durchbruch.
+//   Oral-B:   weitet sich zur UNTERSEITE hin im 45°-Winkel auf (oben snug wie
+//             bisher, unten Trichter) -> Ladegerät passt von unten leichter rein.
+module charge_cut(mk, grow) {
+    if (mk == "orb") {
+        flare = insert_h;   // 45°: horizontale Aufweitung == Höhe
+        hull() {
+            // oben: unveränderte (snug) Öffnung, ragt minimal über die Oberkante
+            translate([0, 0, insert_h - 0.01]) linear_extrude(0.02)
+                charge_open_2d(mk, grow);
+            // unten: um flare aufgeweitet, ragt minimal unter die Unterkante
+            translate([0, 0, -0.1]) linear_extrude(0.1)
+                offset(flare) charge_open_2d(mk, grow);
+        }
+    } else {
+        translate([0, 0, -0.1]) linear_extrude(insert_h + 0.2) charge_open_2d(mk, grow);
+    }
+}
 // zentrierte Ellipse als 2D
 module ellipse(dx, dy) { resize([dx, dy]) circle(d = max(dx, dy), $fn = 56); }
 
@@ -95,8 +114,8 @@ module grid_insert(fn, mk) {
                         linear_extrude(insert_h) offset(collar_t) charge_open_2d(mk, grow);
                 }
             }
-            translate([cx, cy, -0.1])
-                linear_extrude(insert_h + 0.2) charge_open_2d(mk, grow);
+            translate([cx, cy, 0])
+                charge_cut(mk, grow);
         }
     }
 }

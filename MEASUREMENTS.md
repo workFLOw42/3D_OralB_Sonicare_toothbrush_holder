@@ -43,6 +43,7 @@ Die Mess-Skripte und die Referenz-3MF sind **nicht Teil des Repos** (Fremdmodell
 - Gitter 56,1 × 3,0 × 74,6 mm (dünner Wabenring).
 - Innere Öffnung (Lochkontur-Methode): **X ≈ 41,6 mm × Z ≈ 54,8 mm** → **oval ~42 × 55 mm**, Bandbreite ~7 mm.
 - ⇒ `orb_charger_x = 42`, `orb_charger_y = 55` (Ellipse, nicht rund).
+  > **v1.1-Anpassung:** Die Öffnung weitet sich im Modell **zur Unterseite hin im 45°-Winkel** auf (Einführtrichter; oben passgenau).
 
 ### Oral-B Ständer-Zapfen (aus `Ladestation_OralB_ständer.3mf`, object_16)
 - Scheibe 65,7 × 16,0 × 74,6 mm (Wabenlattice); Scheibe Y −8…−4,5 (≈3,5 mm),
@@ -68,12 +69,14 @@ Die Mess-Skripte und die Referenz-3MF sind **nicht Teil des Repos** (Fremdmodell
 - ⇒ Sonicare-Ladestation **D-/Oval-Kontur 51 × 63 mm**, Höhe **20 mm**.
   `son_charger_x = 51`, `son_charger_y = 63`, `charger_h_son = 20`.
   Im Modell als **echte D-Kontur** (Rechteck + Halbkreis) umgesetzt.
+  > **v1.1-Anpassung:** Modell-Öffnung an das reale Ladegerät angepasst und auf **40 × 55 mm** (Halbkreis vorne Ø40) verkleinert (`son_charger_x = 40`, `son_charger_y = 55`). Der Referenzwert 51 × 63 stammt aus dem Holder_v2-Mesh.
 
 ### Sonicare Ständer-Zapfen (aus `Ladestation_Aufsatz_Sonicare.3mf`, „centre 1B")
 - Scheibe 56,1 × 11,0 × 74,6 mm; zentrale Vollsäule.
 - Zapfenprofil (Querschnitt X×Z je Höhe): über die ganze Höhe **6,8 × 6,8 mm**
   (rund, keine Verjüngung); Fußbereich 15,6 × 11,6 (Sockel/Lattice).
-- ⇒ **runder Zapfen Ø ≈ 7 mm**. `son_peg_d = 7`.
+- ⇒ **runder Zapfen Ø ≈ 7 mm** (Referenz).
+  > **v1.1-Anpassung:** Zapfen im Modell auf **Ø5 mm** reduziert (`son_peg_d = 5`).
 
 ### Schiebedeckel-Mechanik (Referenz `Gridfinity_Box_with_Slide_Lid…3mf`)
 Vorbild für die Feder-&-Nut-Schiebehaltung der Einsätze. Aus exakten

@@ -30,7 +30,7 @@ Funktionsflächen stecken in **austauschbaren Voronoi-Einsteckgittern**, die von
 eingeschoben werden – so lässt sich die Belegung später ändern, ohne den ganzen Korpus
 neu zu drucken; das offene Gitter lässt zugleich Restwasser ablaufen.
 
-**Status.** **Version 1.0** – funktionsfähig. Das jetzige Aussehen ist der Startpunkt;
+**Status.** **Version 1.1** – funktionsfähig. Das jetzige Aussehen ist der Startpunkt;
 das Projekt wird **bei Bedarf aktiv weiterentwickelt, überarbeitet und erweitert**
 (weitere Geräte/Varianten, Feintuning der Spiele nach Probedrucken). Wie die Maße
 zustande kommen, ist transparent in [`MEASUREMENTS.md`](MEASUREMENTS.md) dokumentiert.
@@ -89,9 +89,9 @@ zustande kommen, ist transparent in [`MEASUREMENTS.md`](MEASUREMENTS.md) dokumen
 | # | Position | Funktion | Marke | Öffnung / Feature | Gitter-Datei |
 |---|----------|----------|-------|-------------------|--------------|
 | 1 | außen | Ständer | Oral-B   | ovaler Zapfen 8×9,6 → 7,5×9 mm | `grid0.stl` |
-| 2 | innen | Laden   | Oral-B   | ovale Öffnung 42 × 55 mm    | `grid1.stl` |
-| 3 | innen | Laden   | Sonicare | D-Kontur 51 × 63 mm (Bogen vorne) | `grid2.stl` |
-| 4 | außen | Ständer | Sonicare | runder Zapfen Ø7 mm         | `grid3.stl` |
+| 2 | innen | Laden   | Oral-B   | ovale Öffnung 42 × 55 mm (unten 45° aufgeweitet) | `grid1.stl` |
+| 3 | innen | Laden   | Sonicare | D-Kontur 40 × 55 mm (Halbkreis vorne) | `grid2.stl` |
+| 4 | außen | Ständer | Sonicare | runder Zapfen Ø5 mm         | `grid3.stl` |
 
 Einstellbar in `params.scad`: `n_bays` (1–4) und `bay1..bay4`
 (`stand_orb` / `charge_orb` / `stand_son` / `charge_son`). Der Korpus passt seine
@@ -102,7 +102,7 @@ in den Fächern sind davon unabhängig.)*
 <p align="center">
   <img src="doc_top.png" alt="Draufsicht der 4 Fächer" width="780"><br>
   <em>Draufsicht: Oral-B-Ständer (ovaler Zapfen) · Oral-B-Laden (Oval 42×55) ·
-  Sonicare-Laden (D-Kontur 51×63) · Sonicare-Ständer (runder Zapfen Ø7)</em>
+  Sonicare-Laden (D-Kontur 40×55) · Sonicare-Ständer (runder Zapfen Ø5)</em>
 </p>
 
 ---
@@ -123,10 +123,10 @@ in den Fächern sind davon unabhängig.)*
 
 | Feature | Maß |
 |---|---|
-| Oral-B Laden (Ladering-Öffnung) | oval **42 × 55 mm**, Ladehöhe 21 mm |
+| Oral-B Laden (Ladering-Öffnung) | oval **42 × 55 mm** (Öffnung unten 45° aufgeweitet), Ladehöhe 21 mm |
 | Oral-B Ständer-Zapfen | oval, verjüngt **8×10 → 7×9 mm**, h 14 mm |
-| Sonicare Laden (Ladestation) | D-Kontur **51 × 63 mm**, Ladehöhe 20 mm |
-| Sonicare Ständer-Zapfen | rund **Ø 7 mm** (gemessen Ø6,8) |
+| Sonicare Laden (Öffnung) | D-Kontur **40 × 55 mm** (Halbkreis vorne Ø40), Ladehöhe 20 mm |
+| Sonicare Ständer-Zapfen | rund **Ø 5 mm** (Referenz Ø6,8) |
 
 ---
 
@@ -138,10 +138,14 @@ Die lose eingestellte Ladestation schließt damit oben **plan mit dem Gitter** a
 - Oral-B: Boden 3 mm, Ladehöhe 21 mm → Oberkante 24 mm = bündig.
 - Sonicare: Boden 4 mm, Ladehöhe 20 mm → bündig.
 
+Die **Oral-B-Ladeöffnung** weitet sich zur **Unterseite hin im 45°-Winkel** auf
+(Einführtrichter): oben bleibt sie passgenau, unten wird das Einstellen des
+Ladegeräts leichter.
+
 ### Ständer-Zapfen
 Die Bürste wird mit ihrer hohlen Basis auf den Zapfen gesteckt.
 - **Oral-B**: ovaler, sich leicht verjüngender Zapfen (`orb_peg_base`/`orb_peg_tip`).
-- **Sonicare**: runder Zapfen Ø7 (`son_peg_d`), kleine Spitzenfase als Einführhilfe.
+- **Sonicare**: runder Zapfen Ø5 (`son_peg_d`), kleine Spitzenfase als Einführhilfe.
 Beide mit umlaufendem Sockel (`peg_collar`) zur Anbindung an das Voronoi-Gitter.
 
 <p align="center">
@@ -295,11 +299,11 @@ Alle Werte in `params.scad`. „⟳" = nach Änderung `gen_voronoi.py` neu ausf�
 | `relief_h` | 1,4 | Reliefhöhe (erhaben) am Korpus | |
 | `charger_h_orb` / `charger_h_son` | 21 / 20 | Ladestationshöhen (bündig) | |
 | `orb_charger_x` / `orb_charger_y` | 42 / 55 | Oral-B Ladeöffnung (Oval X/Y) | |
-| `son_charger_x` / `son_charger_y` | 51 / 63 | Sonicare Ladeöffnung (D-Form X/Y) | |
+| `son_charger_x` / `son_charger_y` | 40 / 55 | Sonicare Ladeöffnung (D-Form X/Y, Halbkreis vorne) | |
 | `son_charger_fit` | 1,0 | Spiel rundum für die Ladestation | |
 | `orb_peg_base` / `orb_peg_tip` | [8,9.6] / [7.5,9] | Oral-B Zapfen Fuß/Spitze [X,Y] | |
 | `orb_peg_h` | 12,5 | Oral-B Zapfen-Schafthöhe | |
-| `son_peg_d` / `son_peg_h` | 7 / 10 | Sonicare Zapfen Ø / Höhe | |
+| `son_peg_d` / `son_peg_h` | 5 / 10 | Sonicare Zapfen Ø / Höhe | |
 | `peg_collar` | 2,5 | Sockel-Überstand am Zapfenfuß | |
 | `peg_chamfer` | 0,8 | Fase an der Zapfenspitze | |
 | `collar_t` | 3 | Kragen um Lade-Öffnungen | |

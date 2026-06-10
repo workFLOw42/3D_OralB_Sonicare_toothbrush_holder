@@ -21,7 +21,7 @@ part = "platte"; // [platte:Alle Teile auf X2D-Platte, montage:Montage-Vorschau,
 //  Eigenentwicklung; nur die funktionalen Schnittstellenmaße an
 //  Oral-B-/Sonicare-Referenzteilen vermessen (Geräte-Passung):
 //    - Oral-B Cavity-Tiefe ~21 mm, Ladeöffnung oval 42x55, Zapfen 8x9,6->7,5x9
-//    - Sonicare Ladestation 63 x 51 mm (D-Form), Höhe 20 mm (Holder_v2)
+//    - Sonicare Ladeöffnung 40 x 55 mm (D-Form, Halbkreis vorne), Höhe 20 mm
 // =====================================================================
 
 // ---- Korpus (Wanne) -------------------------------------------------
@@ -87,9 +87,9 @@ charger_h_son = 20;   // Sonicare Ladestationshöhe (gemessen)
 // Oral-B Ladeöffnung: OVAL (Ellipse), aus chargeur-Gitter gemessen
 orb_charger_x = 42;     // oval Breite (X, quer)
 orb_charger_y = 55;     // oval Länge (Y)
-// Sonicare: echte D-Kontur (quer ins Fach, 51 mm in X)
-son_charger_x = 51;     // D-Breite (X, quer)   -> passt in 57er Fach
-son_charger_y = 63;     // D-Länge (Y)
+// Sonicare: D-Kontur (quer ins Fach). Vorne voller Halbkreis (Ø = Breite 40).
+son_charger_x = 40;     // D-Breite (X, quer) = Durchmesser des Front-Halbkreises
+son_charger_y = 55;     // D-Tiefe (Y)
 son_charger_fit = 1.0;  // Spiel rundum für die Ladestation (mm)
 
 // ---- Ständer-Zapfen je Marke (Bürste aufstecken) -------------------
@@ -98,8 +98,8 @@ son_charger_fit = 1.0;  // Spiel rundum für die Ladestation (mm)
 orb_peg_base = [8, 9.6];    // [X quer, Y längs] am Fuß
 orb_peg_tip  = [7.5, 9];    // an der Spitze (leichte Verjüngung)
 orb_peg_h    = 12.5;        // Schafthöhe über dem Einsatz
-// Sonicare: runder Zapfen Ø7 (gemessen ~6,8)
-son_peg_d    = 7;
+// Sonicare: runder Zapfen Ø5 (gewuenscht; Referenz gemessen ~6,8)
+son_peg_d    = 5;
 son_peg_h    = 10;
 peg_collar   = 2.5;       // ovaler/runder Sockel-Überstand am Fuß
 peg_chamfer  = 0.8;       // kleine Fase an der Zapfenspitze
@@ -602,7 +602,7 @@ module body() {
 //  Aufruf:  openscad -D bay_index=0 -o grid0.stl grid.scad
 //  stand : Voronoi-Panel + zentraler Zapfen (Bürste aufstecken)
 //          orb Ø10 x 14 | son Ø7 x 10
-//  charge: Voronoi-Panel + Öffnung  orb: Ø42 rund | son: D-Kontur 51x63
+//  charge: Voronoi-Panel + Öffnung  orb: Ellipse 42x55 (unten 45° aufgeweitet) | son: D-Kontur 40x55
 // =====================================================================
 
 bay_index = 0;   // per -D überschreiben
@@ -618,7 +618,7 @@ module dshape(w, L) {
 }
 
 // 2D-Lade-Öffnung, zentriert. grow = umlaufendes Spiel.
-//   Oral-B: Ellipse 42x55 | Sonicare: D-Kontur 51x63
+//   Oral-B: Ellipse 42x55 | Sonicare: D-Kontur 40x55 (Halbkreis vorne)
 module charge_open_2d(mk, grow = 0) {
     if (mk == "son")
         dshape(son_charger_x + 2*grow, son_charger_y + 2*grow);
@@ -626,6 +626,25 @@ module charge_open_2d(mk, grow = 0) {
         resize([orb_charger_x + 2*grow, orb_charger_y + 2*grow]) circle(d = 100);
 }
 
+// Lade-Öffnung als 3D-Schnittkörper.
+//   Sonicare: gerader, senkrechter Durchbruch.
+//   Oral-B:   weitet sich zur UNTERSEITE hin im 45°-Winkel auf (oben snug wie
+//             bisher, unten Trichter) -> Ladegerät passt von unten leichter rein.
+module charge_cut(mk, grow) {
+    if (mk == "orb") {
+        flare = insert_h;   // 45°: horizontale Aufweitung == Höhe
+        hull() {
+            // oben: unveränderte (snug) Öffnung, ragt minimal über die Oberkante
+            translate([0, 0, insert_h - 0.01]) linear_extrude(0.02)
+                charge_open_2d(mk, grow);
+            // unten: um flare aufgeweitet, ragt minimal unter die Unterkante
+            translate([0, 0, -0.1]) linear_extrude(0.1)
+                offset(flare) charge_open_2d(mk, grow);
+        }
+    } else {
+        translate([0, 0, -0.1]) linear_extrude(insert_h + 0.2) charge_open_2d(mk, grow);
+    }
+}
 // zentrierte Ellipse als 2D
 module ellipse(dx, dy) { resize([dx, dy]) circle(d = max(dx, dy), $fn = 56); }
 
@@ -691,8 +710,8 @@ module grid_insert(fn, mk) {
                         linear_extrude(insert_h) offset(collar_t) charge_open_2d(mk, grow);
                 }
             }
-            translate([cx, cy, -0.1])
-                linear_extrude(insert_h + 0.2) charge_open_2d(mk, grow);
+            translate([cx, cy, 0])
+                charge_cut(mk, grow);
         }
     }
 }
