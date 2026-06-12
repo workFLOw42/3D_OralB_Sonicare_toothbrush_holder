@@ -3,6 +3,17 @@
 Versionshistorie des frei konfigurierbaren Zahnbürstenhalters. Format angelehnt an
 [Keep a Changelog](https://keepachangelog.com/de/). Maße in mm.
 
+## [1.2] – 2026-06-12 · Sonicare-Zapfen angepasst
+
+### Geändert · Geräte-Passung (Maße)
+- **Sonicare-Ständer-Zapfen** im Durchmesser auf **Ø5,5 mm** vergrößert
+  (`son_peg_d` 5 → 5.5) und in der **Schafthöhe um 1,5 mm gekürzt** auf **8,5 mm**
+  (`son_peg_h` 10 → 8.5). Betrifft den Sonicare-Ständer-Einsatz (`grid3.stl` in der
+  Standard-Belegung).
+- STL (`grid3`), 3MF und Vorschaubilder (`doc_iso`, `doc_top`) neu gebaut;
+  MakerWorld-Einzeldatei gespiegelt.
+
+---
 ## [1.1] – 2026-06-10 · Robuste hintere Eckpfosten + Geräte-Passung
 
 ### Geändert / Behoben

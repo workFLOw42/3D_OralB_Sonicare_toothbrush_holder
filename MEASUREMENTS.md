@@ -77,6 +77,7 @@ Die Mess-Skripte und die Referenz-3MF sind **nicht Teil des Repos** (Fremdmodell
   (rund, keine Verjüngung); Fußbereich 15,6 × 11,6 (Sockel/Lattice).
 - ⇒ **runder Zapfen Ø ≈ 7 mm** (Referenz).
   > **v1.1-Anpassung:** Zapfen im Modell auf **Ø5 mm** reduziert (`son_peg_d = 5`).
+  > **v1.2-Anpassung:** Zapfen auf **Ø5,5 mm** vergrößert und **1,5 mm gekürzt** auf **8,5 mm** Schafthöhe (`son_peg_d = 5.5`, `son_peg_h = 8.5`).
 
 ### Schiebedeckel-Mechanik (Referenz `Gridfinity_Box_with_Slide_Lid…3mf`)
 Vorbild für die Feder-&-Nut-Schiebehaltung der Einsätze. Aus exakten

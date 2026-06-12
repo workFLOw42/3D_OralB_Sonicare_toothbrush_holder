@@ -81,9 +81,9 @@ son_charger_fit = 1.0;  // Spiel rundum für die Ladestation (mm)
 orb_peg_base = [8, 9.6];    // [X quer, Y längs] am Fuß
 orb_peg_tip  = [7.5, 9];    // an der Spitze (leichte Verjüngung)
 orb_peg_h    = 12.5;        // Schafthöhe über dem Einsatz
-// Sonicare: runder Zapfen Ø5 (gewuenscht; Referenz gemessen ~6,8)
-son_peg_d    = 5;
-son_peg_h    = 10;
+// Sonicare: runder Zapfen Ø5,5 (gewuenscht; Referenz gemessen ~6,8)
+son_peg_d    = 5.5;
+son_peg_h    = 8.5;
 peg_collar   = 2.5;       // ovaler/runder Sockel-Überstand am Fuß
 peg_chamfer  = 0.8;       // kleine Fase an der Zapfenspitze
 
