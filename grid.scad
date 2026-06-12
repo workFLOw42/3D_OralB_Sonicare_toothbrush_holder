@@ -2,7 +2,7 @@
 //  grid.scad  -  Einsteckgitter im Voronoi-Stil (ein Fach)
 //  Aufruf:  openscad -D bay_index=0 -o grid0.stl grid.scad
 //  stand : Voronoi-Panel + zentraler Zapfen (Bürste aufstecken)
-//          orb Ø10 x 14 | son Ø7 x 10
+//          orb Ø10 x 14 | son Ø5,5 x 8,5
 //  charge: Voronoi-Panel + Öffnung  orb: Ø42 rund | son: D-Kontur 51x63
 // =====================================================================
 include <params.scad>
