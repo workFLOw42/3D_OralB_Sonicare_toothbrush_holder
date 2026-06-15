@@ -28,9 +28,10 @@ Gleiches Design-Vokabular wie das Schwester-Projekt
 Flächen, **erhabenes Voronoi-Relief** und eine **werkzeuglose Schiebe-Mechanik**. Die
 Funktionsflächen stecken in **austauschbaren Voronoi-Einsteckgittern**, die von hinten
 eingeschoben werden – so lässt sich die Belegung später ändern, ohne den ganzen Korpus
-neu zu drucken; das offene Gitter lässt zugleich Restwasser ablaufen.
+neu zu drucken. Seit v2 sind die Einsätze **geschlossene Platten** mit dünnem, rein
+optischem Voronoi-Relief (statt offenem Gitter).
 
-**Status.** **Version 1.1** – funktionsfähig. Das jetzige Aussehen ist der Startpunkt;
+**Status.** **Version 2.0** – funktionsfähig. Das jetzige Aussehen ist der Startpunkt;
 das Projekt wird **bei Bedarf aktiv weiterentwickelt, überarbeitet und erweitert**
 (weitere Geräte/Varianten, Feintuning der Spiele nach Probedrucken). Wie die Maße
 zustande kommen, ist transparent in [`MEASUREMENTS.md`](MEASUREMENTS.md) dokumentiert.
@@ -55,17 +56,21 @@ zustande kommen, ist transparent in [`MEASUREMENTS.md`](MEASUREMENTS.md) dokumen
 
 ## Konzept
 - **Korpus** = rechteckige Wanne mit 4 Fächern in einer Reihe.
-  - Voronoi-**Relief** (erhaben) auf Front + 2 Seiten (Rückseite = Rückwand).
+  - **Dünnes** Voronoi-**Relief** (erhaben, ~Lagen-dünn, rein optisch) auf Front + 2
+    Seiten (Rückseite = Rückwand).
   - **Alle Außenkanten/Ecken mit R5 mm abgerundet**.
   - **Geschlossener Boden**; **hinten offen** für die einschiebbare Rückwand.
-  - Steht auf **4 Füßen** (Ø10 mm, 5 mm hoch, 5 mm von den Ecken).
-- **Einsätze** = austauschbare Voronoi-Gitter, **von hinten eingeschoben** und per
-  **Feder & Nut** gehalten (Schiebedeckel-Prinzip): seitliche **Lippen** an der
-  Fach-Oberkante übergreifen die Einsatz-Oberkante → der Einsatz hebt sich beim
-  Abziehen der Bürste **nicht** mehr mit. Oberseite bündig.
+  - Steht auf **4 steckbaren Füßen** (separates Teil `foot.scad`, Ø10 × 5 mm + Zapfen
+    Ø5 × 2 mm) – von unten in Bodensacklöcher gesteckt, stützenfrei.
+- **Einsätze** = **geschlossene Platten** mit dünnem Voronoi-Relief obenauf,
+  **von hinten eingeschoben** und per **Feder & Nut** gehalten (Schiebedeckel-Prinzip):
+  seitliche **Lippen** an der Fach-Oberkante übergreifen die Einsatz-Oberkante → der
+  Einsatz hebt sich beim Abziehen der Bürste **nicht** mehr mit. Oberseite bündig.
   - **Ständer**: zentraler **Zapfen** – die Bürste wird aufgesteckt.
   - **Laden**: Öffnung für die lose eingestellte Ladestation, die oben
-    **flächenbündig mit dem Gitter** abschließt.
+    **flächenbündig mit dem Gitter** abschließt. Sonicare zusätzlich mit einer
+    **halbrunden Kabelrinne** (5 × 2 mm) auf der Unterseite am geraden D-Ende.
+  - **Ablage** (`tray`): komplett **geschlossene** Platte ohne Zapfen/Öffnung.
 - **Rückwand** = separate Platte (10 mm tief, **bündig** mit den hinteren Eckpfosten)
   mit Voronoi-Relief, **von oben senkrecht** eingeschoben. Ihre **Feder vorn**
   (`rear_tongue_d`) greift in eine senkrechte Nut in den **massiven Eckpfosten**
@@ -110,22 +115,22 @@ in den Fächern sind davon unabhängig.)*
 ## Maße
 | | Wert |
 |---|---|
-| Korpus außen (inkl. Relief) | **249,8 × 94,4 × 24 mm** |
-| + Füße | 5 mm → Gesamthöhe **29 mm** |
+| Korpus außen (inkl. Relief) | **249,8 × 94,4 × 25 mm** (Wände v2 +1 mm) |
+| + Füße | 5 mm → Gesamthöhe **30 mm** |
 | Fach innen | 57 × 79 mm |
 | Wandstärke | **5 mm** (Seitenwände) · zwei massive hintere Eckpfosten (10 mm) für die Rückwand-Nut · Boden 3 mm · Trennwand 3 mm |
 | Kanten-/Eckradius | **R5 mm** (alle Außenkanten) |
-| Füße (4×) | Ø10 mm, 5 mm hoch, Mitte 10 mm von den Rändern |
-| Einsatz-Gitter | 56,2 × ~79 × 6 mm + Zapfen/Öffnung |
+| Füße (4×, steckbar) | Ø10 mm, 5 mm hoch + Zapfen Ø5 × 2 mm; Mitte 10 mm von den Rändern |
+| Einsatz (geschlossene Platte) | 56,2 × ~79 × 6 mm + Zapfen/Öffnung, dünnes Relief oben |
 | Druckplatte (alle Teile) | 249,8 × 196,6 mm → passt auf Bambu **X2D (256×256)** |
 
 **Aus echten Referenzteilen gemessen** (Details → [Herkunft der Maße](#herkunft-der-maße)):
 
 | Feature | Maß |
 |---|---|
-| Oral-B Laden (Ladering-Öffnung) | oval **42 × 55 mm** (Öffnung unten 45° aufgeweitet), Ladehöhe 21 mm |
+| Oral-B Laden (Ladering-Öffnung) | oval **41 × 54 mm** (Öffnung unten 45° aufgeweitet), Ladehöhe 21 mm |
 | Oral-B Ständer-Zapfen | oval, verjüngt **8×10 → 7×9 mm**, h 14 mm |
-| Sonicare Laden (Öffnung) | D-Kontur **40 × 55 mm** (Halbkreis vorne Ø40), Ladehöhe 20 mm |
+| Sonicare Laden (Öffnung) | D-Kontur **39 × 53 mm** (Halbkreis vorne), Ladehöhe 20 mm; Kabelrinne 5×2 mm unten |
 | Sonicare Ständer-Zapfen | rund **Ø 5,5 mm**, h 8,5 mm (Referenz Ø6,8) |
 
 ---
@@ -134,9 +139,11 @@ in den Fächern sind davon unabhängig.)*
 
 ### Bündiges Laden
 Lade-Fächer haben einen **erhöhten Boden** auf Höhe `body_height − charger_h`.
-Die lose eingestellte Ladestation schließt damit oben **plan mit dem Gitter** ab.
-- Oral-B: Boden 3 mm, Ladehöhe 21 mm → Oberkante 24 mm = bündig.
-- Sonicare: Boden 4 mm, Ladehöhe 20 mm → bündig.
+Die lose eingestellte Ladestation schließt damit oben **plan mit dem Einsatz** ab.
+Da die Wände v2 um 1 mm höher sind (`body_height` 25), wächst der Ladestations-Sockel
+automatisch mit (`pf = body_height − charger_h`), die Bündigkeit bleibt erhalten.
+- Oral-B: Ladehöhe 21 mm → Oberkante 25 mm = bündig.
+- Sonicare: Ladehöhe 20 mm → bündig.
 
 Die **Oral-B-Ladeöffnung** weitet sich zur **Unterseite hin im 45°-Winkel** auf
 (Einführtrichter): oben bleibt sie passgenau, unten wird das Einstellen des
@@ -150,14 +157,16 @@ Beide mit umlaufendem Sockel (`peg_collar`) zur Anbindung an das Voronoi-Gitter.
 
 <p align="center">
   <img src="doc_peg_orb.png" alt="Oral-B Ständergitter mit ovalem Zapfen" width="420"><br>
-  <em>Oral-B-Ständergitter: ovaler, sich verjüngender Zapfen auf Voronoi-Lattice</em>
+  <em>Oral-B-Ständereinsatz: ovaler, sich verjüngender Zapfen auf geschlossener Platte (dünnes Relief)</em>
 </p>
 
 ### Abrundung & Füße
 Der Korpus wird über `minkowski()` mit einer Kugel (R `fillet_r`) **allseitig
 verrundet**. Das Flächen-Relief ist deshalb um `fillet_r` von den Kanten
-eingerückt (sitzt auf den flachen Bändern). Vier Füße (`foot_*`) heben den
-geschlossenen Boden ab (Belüftung/Abtropfen, definierte Auflage).
+eingerückt (sitzt auf den flachen Bändern). Die **vier Füße sind ein separates
+Steck-Teil** (`foot.scad`, Ø10 × 5 mm + Zapfen Ø5 × 2 mm): Der Boden trägt nur
+**Sacklöcher** (Ø5,1, 2 mm tief), die Füße werden von unten eingesteckt. Kein nach
+unten zeigender Zapfen → alle Teile sind **ohne Stützen** druckbar.
 
 ### Einschiebbare Rückwand & Kabellöcher
 Die Rückseite ist offen; eine **separate Rückwand** (10 mm tief, **bündig** mit den
@@ -180,11 +189,12 @@ Breite (Feder) und schiebt von hinten darunter. So ist er vertikal gefangen und
 hebt sich beim Abziehen der Bürste nicht. Spiel `rail_clear`.
 
 ### Voronoi
-- **Korpus-Flächen**: geschlossene Wand mit **erhabenem** Voronoi-Relief
-  (Zellraster `voro_cell_face`).
-- **Einsatz-Gitter**: **offenes** Voronoi-Lattice mit Rahmen (Zellraster `voro_cell`).
-Beide Muster werden von `gen_voronoi.py` (scipy) erzeugt und in
-`voronoi_data.scad` geschrieben.
+Seit v2 ist das Relief **dünn und rein optisch** (Deko, keine durchbrochenen Gitter):
+- **Korpus-Flächen + Rückwand**: erhaben **0,4 mm** (`relief_h`, Zellraster `voro_cell_face`).
+- **Einsätze**: **geschlossene Platte** + **0,2 mm** Relief obenauf (`relief_insert_h`,
+  Zellraster `voro_cell`).
+Die Muster werden von `gen_voronoi.py` (scipy) erzeugt und in `voronoi_data.scad`
+geschrieben (`voro_face_long`, `voro_face_short`, `voro_insert`).
 
 ---
 
@@ -196,10 +206,11 @@ Beide Muster werden von `gen_voronoi.py` (scipy) erzeugt und in
 | `params.scad` | **Alle Parameter** – einzige Wahrheitsquelle |
 | `voronoi.scad` | 2D-Voronoi-Netz + Relief-Platzierung auf den 4 Flächen |
 | `voronoi_data.scad` | **auto-generiert** – Voronoi-Kantensegmente (nicht von Hand ändern) |
-| `body.scad` | Korpus: Wanne, Rundung, Füße, Fach-Lippen, Seitenwand-Nuten (Rückwand), Relief |
-| `grid.scad` | Ein Einsteckgitter (T-Profil/Feder); Variante über `-D bay_index=0..3` |
+| `body.scad` | Korpus: Wanne, Rundung, Boden-Sacklöcher (Füße), Fach-Lippen, Seitenwand-Nuten (Rückwand), Relief |
+| `grid.scad` | Ein Einsatz (geschlossene Platte + Relief, T-Profil/Feder); Variante über `-D bay_index=0..3` |
 | `rear_wall.scad` | separate Rückwand: Federn, Boden-Feder, Relief, Kabellöcher |
-| `assembly.scad` | Vorschau: Korpus + 4 Einsätze + Rückwand (nur Ansicht) |
+| `foot.scad` | separater Steck-Fuß (Zylinder + Zapfen nach oben) |
+| `assembly.scad` | Vorschau: Korpus + Füße + 4 Einsätze + Rückwand (nur Ansicht) |
 | `zahnbuersten_voronoi_makerworld.scad` | **EIN-DATEI** (alle Module inline) für **MakerWorld** – Customizer mit Belegung + Teil-Auswahl |
 
 **Werkzeuge (Python):**
@@ -207,6 +218,7 @@ Beide Muster werden von `gen_voronoi.py` (scipy) erzeugt und in
 | Datei | Zweck |
 |---|---|
 | `gen_voronoi.py` | erzeugt `voronoi_data.scad` aus `params.scad` |
+| `gen_makerworld.py` | erzeugt die MakerWorld-Einzeldatei aus den Quell-`.scad` |
 | `pack_3mf.py` | packt alle STL flach auf eine Platte → `Zahnbuersten_Voronoi_4er.3mf` |
 | `build.ps1` | kompletter Build (Daten → STL → 3MF → Vorschau) |
 | `extract_profiles.py`, `measure2.py`, `ref_render.py`, `son_analyse.py` | Vermessung/Render der Referenzteile zur Schnittstellen-Maßnahme (Doku/Nachvollzug) |
@@ -219,6 +231,7 @@ Beide Muster werden von `gen_voronoi.py` (scipy) erzeugt und in
 | `body.stl` | Korpus |
 | `grid0.stl … grid3.stl` | die 4 Einsätze (siehe Belegungstabelle) |
 | `rearwall.stl` | separate Rückwand |
+| `foot.stl` | Steck-Fuß (4× drucken) |
 | `doc_iso.png`, `doc_top.png`, `doc_peg_orb.png`, `assembly_back.png` | Vorschaubilder |
 
 **Dokumentation:** `README.md` (diese Datei) · [`MEASUREMENTS.md`](MEASUREMENTS.md) (Mess-Herkunft) · [`CHANGELOG.md`](CHANGELOG.md) (Versionshistorie)
@@ -231,11 +244,13 @@ Für MakerWorlds **Parametric Model Maker** die **einzelne** Datei
 die aufgeteilten `*.scad` mit `include` funktionieren dort nicht).
 
 Customizer-Optionen:
-- **Belegung**: `n_bays` (1–4) und `bay1..bay4` (OralB/Sonicare × Ständer/Laden).
+- **Belegung**: `n_bays` (1–4) und `bay1..bay4` (OralB/Sonicare × Ständer/Laden
+  oder **`tray` = Ablage**, komplett geschlossen).
 - **Teil-Auswahl** (`part`):
   - **`platte`** (Standard): **alle Teile druckfertig auf einer X2D-Platte**
-    (Korpus + Gitter + flach gelegte Rückwand, < 256 × 256 mm) – ein Export, alles dabei.
-  - `montage` (Vorschau), `korpus`, `gitter1..4`, `rueckwand` – einzelne Teile.
+    (Korpus + Einsätze + flach gelegte Rückwand + 4 Füße, < 256 × 256 mm).
+  - `montage` (Vorschau), `korpus`, `gitter1..4`, `rueckwand`, **`fuss`** (Steck-Fuß),
+    **`ablage`** (geschlossener Einsatz) – einzelne Teile.
 
 ---
 
@@ -271,18 +286,19 @@ Alle Werte in `params.scad`. „⟳" = nach Änderung `gen_voronoi.py` neu ausf�
 | Parameter | Default | Bedeutung | ⟳ |
 |---|---|---|:--:|
 | `n_bays` | 4 | Anzahl Fächer (1–4, konfigurierbar) | ⟳ |
-| `bay1..bay4` | s. Belegung | Typ je Fach (`stand_orb`/`charge_orb`/`stand_son`/`charge_son`) | |
+| `bay1..bay4` | s. Belegung | Typ je Fach (`stand_orb`/`charge_orb`/`stand_son`/`charge_son`/`tray`) | |
 | `bay_inner_w` | 57 | Fach-Innenbreite X (mm) | ⟳ |
 | `divider_t` | 3 | Trennwand zwischen Fächern | ⟳ |
 | `wall_t` | 5 | Außenwandstärke (dick für bündige Rückwand-Nut) | ⟳ |
 | `body_depth` | 79 | lichte Fachtiefe Y (Front..Rückwand) | ⟳ |
 | `floor_t` | 3 | Bodenstärke | |
-| `body_height` | 24 | Wandhöhe (= Boden + Oral-B-Ladehöhe) | ⟳ |
-| `insert_h` | 6 | Dicke der Einsatzgitter | |
+| `body_height` | 25 | Wandhöhe (= Boden + Oral-B-Ladehöhe + 1 mm) | ⟳ |
+| `insert_h` | 6 | Dicke der Einsätze | |
 | `ledge_w` | 2 | umlaufende Einsatz-Auflage | |
 | `clearance` | 0,4 | Spiel Einsatz↔Fach pro Seite | |
 | `fillet_r` | 5 | Radius aller Außenkanten | ⟳ |
 | `foot_r` / `foot_h` / `foot_inset` | 5 / 5 / 5 | Fußradius / -höhe / Abstand v. Ecke | |
+| `peg_d` / `peg_h` / `peg_hole_d` / `peg_hole_dep` | 5 / 2 / 5,1 / 2 | Steck-Fuß: Zapfen-Ø/-Höhe, Bodenloch-Ø/-Tiefe | |
 | `rail_overhang` | 2 | Lippen-Überstand nach innen (Feder-Eingriff); max ~2,5 (Sonicare-Öffnung) | |
 | `rail_thick` | 3 | Höhe der Lippe/Feder (Z) | |
 | `rail_clear` | 0,25 | Spiel Feder↔Lippe | |
@@ -296,11 +312,13 @@ Alle Werte in `params.scad`. „⟳" = nach Änderung `gen_voronoi.py` neu ausf�
 | `voro_cell` | 12 | Zellabstand der Einsatz-Gitter | ⟳ |
 | `voro_cell_face` | 7 | Zellabstand des Korpus-Reliefs | ⟳ |
 | `voro_strut` | 1,8 | Stegbreite | |
-| `relief_h` | 1,4 | Reliefhöhe (erhaben) am Korpus | |
+| `relief_h` | 0,4 | Reliefhöhe Korpus + Rückwand (dünn, Deko) | |
+| `relief_insert_h` | 0,2 | Reliefhöhe Einsätze (1 Lage) | |
 | `charger_h_orb` / `charger_h_son` | 21 / 20 | Ladestationshöhen (bündig) | |
-| `orb_charger_x` / `orb_charger_y` | 42 / 55 | Oral-B Ladeöffnung (Oval X/Y) | |
-| `son_charger_x` / `son_charger_y` | 40 / 55 | Sonicare Ladeöffnung (D-Form X/Y, Halbkreis vorne) | |
+| `orb_charger_x` / `orb_charger_y` | 41 / 54 | Oral-B Ladeöffnung (Oval X/Y) | |
+| `son_charger_x` / `son_charger_y` | 39 / 53 | Sonicare Ladeöffnung (D-Form X/Y, Halbkreis vorne) | |
 | `son_charger_fit` | 1,0 | Spiel rundum für die Ladestation | |
+| `son_cable_w` / `son_cable_h` | 5 / 2 | Sonicare-Kabelrinne (Unterseite, gerades D-Ende) | |
 | `orb_peg_base` / `orb_peg_tip` | [8,9.6] / [7.5,9] | Oral-B Zapfen Fuß/Spitze [X,Y] | |
 | `orb_peg_h` | 12,5 | Oral-B Zapfen-Schafthöhe | |
 | `son_peg_d` / `son_peg_h` | 5,5 / 8,5 | Sonicare Zapfen Ø / Höhe | |
@@ -336,11 +354,12 @@ Empfehlung (bewährtes Profil):
   Stützen** druckbar (Boden geschlossen, hinten offen). Die Fach-**Lippen** sind
   kurze (~2 mm) Überhänge an der Oberkante → bridgen i. d. R. ohne Stützen; bei
   Sagging Stützen nur für die Lippen-Unterseiten aktivieren.
-- **Gitter**: flach mit Zapfen/Rahmen nach oben – **keine Stützen** nötig.
+- **Einsätze**: flach mit Zapfen/Relief nach oben – **keine Stützen** nötig.
 - **Rückwand**: flach liegend drucken (Relief nach oben) – **keine Stützen**.
-- **Mehrfarbig (optional)**: Korpus einfarbig, Gitter/Rückwand in Kontrastfarbe.
-- Alle 6 Teile passen gemeinsam auf eine X2D-Platte (`Zahnbuersten_Voronoi_4er.3mf`,
-  Bauraum 249,8×183,7 mm).
+- **Füße (4×)**: stehend, **Zapfen nach oben** – stützenfrei; von unten in den Korpus stecken.
+- **Mehrfarbig (optional)**: Korpus einfarbig, Einsätze/Rückwand in Kontrastfarbe.
+- Alle Teile (inkl. 4 Füße) passen gemeinsam auf eine X2D-Platte
+  (`Zahnbuersten_Voronoi_4er.3mf`, Bauraum 247,8×210,6 mm).
 
 ---
 

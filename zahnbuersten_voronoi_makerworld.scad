@@ -1,18 +1,18 @@
 // =====================================================================
 //  Elektr. Zahnbuerstenhalter (Oral-B + Sonicare), frei konfigurierbar
 //  EIN-DATEI / self-contained fuer MakerWorld (Parametric Model Maker).
-//  Konfigurierbar: Anzahl Module (1-4) + je Fach Marke & Funktion.
-//  Auto-zusammengefuehrt aus params/voronoi_data/voronoi/body/grid/rear_wall.
+//  Steck-System v2: flaches Deko-Voronoi, geschlossene Einschuebe (+ Ablage),
+//  steckbare Fuesse. AUTO-GENERIERT von gen_makerworld.py - nicht von Hand editieren.
 // =====================================================================
 
 /* [Teil-Auswahl] */
 // Was erzeugen? "platte" = alle Teile druckfertig auf einer X2D-Platte.
-part = "platte"; // [platte:Alle Teile auf X2D-Platte, montage:Montage-Vorschau, korpus:Korpus, gitter1:Einsatz Fach 1, gitter2:Einsatz Fach 2, gitter3:Einsatz Fach 3, gitter4:Einsatz Fach 4, rueckwand:Rueckwand]
+part = "platte"; // [platte:Alle Teile auf X2D-Platte, montage:Montage-Vorschau, korpus:Korpus, gitter1:Einsatz Fach 1, gitter2:Einsatz Fach 2, gitter3:Einsatz Fach 3, gitter4:Einsatz Fach 4, rueckwand:Rueckwand, fuss:Steck-Fuss, ablage:Ablage (geschlossen)]
 
 /* [Hinweis] */
 // Das Voronoi-Flaechenrelief ist fuer 4 Faecher vorberechnet; bei weniger Faechern
-// wird es vorne nur beschnitten (rein optisch). Die Gitter-Muster in den Faechern
-// sind unabhaengig und immer korrekt.
+// wird es vorne nur beschnitten (rein optisch). Die Einschub-Muster sind unabhaengig.
+
 
 // ============================ params.scad ============================
 // =====================================================================
@@ -32,8 +32,9 @@ wall_t       = 5.0;   // Außenwandstärke (mm) - dick genug für die bündige
                       //   senkrechte Rückwand-Nut in den Seitenwänden (statt Außenpfosten)
 body_depth   = 79;    // lichte Fachtiefe in Y (Front-Innenkante .. Rückwand-Vorderkante)
 floor_t      = 3.0;   // Bodenstärke (mm, jetzt geschlossen)
-// Wandhöhe = Boden + größte Ladestationshöhe -> Ladestation schließt bündig ab
-body_height  = 24;    // = floor_t(3) + Oral-B-Ladehöhe(21); bei Änderung anpassen
+// Wandhöhe = Boden + größte Ladestationshöhe (+1 mm höhere Wände). Die Ladestationen
+// bleiben über pf = body_height - charger_h bündig (Sockel wächst um 1 mm mit).
+body_height  = 25;    // = floor_t(3) + Oral-B-Ladehöhe(21) + 1 mm höhere Wände
 
 // ---- Einsatz-Sitz ---------------------------------------------------
 insert_h     = 6.0;   // Dicke der Einsatzgitter (mm)
@@ -45,6 +46,14 @@ fillet_r     = 5.0;   // Radius aller Außenkanten/Ecken (0,5 cm)
 foot_r       = 5.0;   // Fußradius (0,5 cm)
 foot_h       = 5.0;   // Fußhöhe (0,5 cm)
 foot_inset   = 5.0;   // Fußrand 0,5 cm von der Ecke (Mittelpunkt = inset+foot_r)
+
+// ---- Steck-System: separate Füße (Kabelbox-Stil) -------------------
+//  Füße werden von UNTEN in den Boden gesteckt (Zapfen zeigt nach oben ->
+//  stützenfrei). Der Boden trägt nur Sacklöcher, kein nach unten zeigender Zapfen.
+peg_d        = 5.0;   // Zapfen-Durchmesser
+peg_h        = 2.0;   // Zapfen-Höhe (Steck-Tiefe)
+peg_hole_d   = 5.1;   // Aufnahme-Loch im Boden (snug, +0,1 mm Spiel)
+peg_hole_dep = 2.0;   // Sackloch-Tiefe im Boden (floor_t=3 -> 1 mm bleibt stehen)
 
 // ---- Feder & Nut: Einsatz-Schiebehaltung (Gridfinity-Stil) ---------
 //  Einsatz wird von HINTEN eingeschoben; seitliche Lippen an der Fach-
@@ -79,18 +88,22 @@ voro_seed     = 7;    // Zufalls-Seed (deterministisch)
 voro_cell     = 12;   // Zellabstand Einsätze (mm)
 voro_cell_face = 7;   // Zellabstand Korpus-Flächen (feiner, schmales Band)
 voro_strut   = 1.8;   // Stegbreite (mm)
-relief_h     = 1.4;   // Reliefhöhe am Korpus (erhaben, mm)
+relief_h     = 0.4;   // Reliefhöhe Korpus + Rückwand (erhaben, ~2 Lagen, nur Deko)
+relief_insert_h = 0.2; // Reliefhöhe Einschübe (1 Lage, Muster auf geschlossener Platte)
 
 // ---- Ladestations-Maße (für flächenbündiges Abschließen) ------------
 charger_h_orb = 21;   // Oral-B Ladestationshöhe (aus Referenz-Cavity ~21)
 charger_h_son = 20;   // Sonicare Ladestationshöhe (gemessen)
 // Oral-B Ladeöffnung: OVAL (Ellipse), aus chargeur-Gitter gemessen
-orb_charger_x = 42;     // oval Breite (X, quer)
-orb_charger_y = 55;     // oval Länge (Y)
-// Sonicare: D-Kontur (quer ins Fach). Vorne voller Halbkreis (Ø = Breite 40).
-son_charger_x = 40;     // D-Breite (X, quer) = Durchmesser des Front-Halbkreises
-son_charger_y = 55;     // D-Tiefe (Y)
+orb_charger_x = 41;     // oval Breite (X, quer)  -- 1 mm schmaler
+orb_charger_y = 54;     // oval Länge (Y)         -- 1 mm weniger tief
+// Sonicare: D-Kontur (quer ins Fach). Vorne voller Halbkreis (Ø = Breite).
+son_charger_x = 39;     // D-Breite (X, quer)     -- 1 mm schmaler
+son_charger_y = 53;     // D-Tiefe (Y)            -- 2 mm weniger tief
 son_charger_fit = 1.0;  // Spiel rundum für die Ladestation (mm)
+// Kabelrinne an der GERADEN D-Kante, Unterseite des Sonicare-Einschubs
+son_cable_w   = 5.0;    // Breite der halbrunden Kabelrinne (X)
+son_cable_h   = 2.0;    // Höhe der Kabelrinne (Z, von der Unterseite hoch)
 
 // ---- Ständer-Zapfen je Marke (Bürste aufstecken) -------------------
 // Oral-B: OVALER, sich verjüngender Zapfen (Mesh-Schnitt Ladestation_OralB_ständer.3mf:
@@ -110,17 +123,18 @@ collar_t  = 3.0;  // Verstärkungs-Kragen um Lade-Öffnungen (mm)
 //  Anzahl Module + Typ je Fach. Typ = Funktion (Ständer/Laden) + Marke.
 /* [Belegung] */
 n_bays = 4; // [1,2,3,4]
-bay1 = "stand_orb";  // [stand_orb:OralB Ständer, charge_orb:OralB Laden, stand_son:Sonicare Ständer, charge_son:Sonicare Laden]
-bay2 = "charge_orb"; // [stand_orb:OralB Ständer, charge_orb:OralB Laden, stand_son:Sonicare Ständer, charge_son:Sonicare Laden]
-bay3 = "charge_son"; // [stand_orb:OralB Ständer, charge_orb:OralB Laden, stand_son:Sonicare Ständer, charge_son:Sonicare Laden]
-bay4 = "stand_son";  // [stand_orb:OralB Ständer, charge_orb:OralB Laden, stand_son:Sonicare Ständer, charge_son:Sonicare Laden]
+bay1 = "stand_orb";  // [stand_orb:OralB Ständer, charge_orb:OralB Laden, stand_son:Sonicare Ständer, charge_son:Sonicare Laden, tray:Ablage]
+bay2 = "charge_orb"; // [stand_orb:OralB Ständer, charge_orb:OralB Laden, stand_son:Sonicare Ständer, charge_son:Sonicare Laden, tray:Ablage]
+bay3 = "charge_son"; // [stand_orb:OralB Ständer, charge_orb:OralB Laden, stand_son:Sonicare Ständer, charge_son:Sonicare Laden, tray:Ablage]
+bay4 = "stand_son";  // [stand_orb:OralB Ständer, charge_orb:OralB Laden, stand_son:Sonicare Ständer, charge_son:Sonicare Laden, tray:Ablage]
 
 // Typ-String -> [funktion, marke, label]
 function _baytype(s) =
     s == "stand_orb"  ? ["stand",  "orb", "OralB-Staender"]    :
     s == "charge_orb" ? ["charge", "orb", "OralB-Laden"]       :
     s == "stand_son"  ? ["stand",  "son", "Sonicare-Staender"] :
-                        ["charge", "son", "Sonicare-Laden"];
+    s == "charge_son" ? ["charge", "son", "Sonicare-Laden"]    :
+                        ["tray",   "-",   "Ablage"];   // komplett geschlossen, kein Zapfen/Öffnung
 _baysel = [bay1, bay2, bay3, bay4];
 bays = [ for (i = [0 : n_bays - 1]) _baytype(_baysel[i]) ];
 
@@ -128,6 +142,10 @@ bays = [ for (i = [0 : n_bays - 1]) _baytype(_baysel[i]) ];
 inner_w = n_bays*bay_inner_w + (n_bays-1)*divider_t;
 outer_w = inner_w + 2*wall_t;
 outer_d = wall_t + body_depth + rear_wall_t;         // Front-Wand + Fachtiefe + bündige Rückwand/Pfosten
+
+// 4 Fuß-/Sackloch-Positionen (gemeinsame Wahrheitsquelle für Boden + Füße)
+function foot_pts() = let (m = foot_inset + foot_r)
+    [[m, m], [outer_w - m, m], [m, outer_d - m], [outer_w - m, outer_d - m]];
 
 // Rückwand füllt die Pfostenzone bündig; ihre Feder greift vorn in die Pfosten-Nut.
 rear_wall_y0 = outer_d - rear_wall_t;                // Vorderkante der Rückwand (Y) = wall_t + body_depth
@@ -138,214 +156,263 @@ function charger_h(fn, mk) =
 
 $fn = 32;
 
+
+// ============================ voronoi.scad ============================
+// =====================================================================
+//  voronoi.scad  -  Voronoi-Netz (2D) + Relief-Platzierung auf Flächen
+// =====================================================================
+
+// 2D-Netz: jedes Segment wird zu einer "Kapsel" (hull zweier Kreise).
+module voro_web_2d(segs, strut) {
+    r = strut / 2;
+    union()
+        for (s = segs)
+            hull() {
+                translate([s[0], s[1]]) circle(r = r, $fn = 16);
+                translate([s[2], s[3]]) circle(r = r, $fn = 16);
+            }
+}
+
+// Relief-Scheibe: Netz auf Rechteck w x h geclippt, Dicke "thick" in +Z.
+// Taucht "ov" mm in den Körper ein (-Z), damit es sicher verschmilzt.
+module voro_slab(w, h, segs, strut, thick, ov = 0.8) {
+    translate([0, 0, -ov])
+        linear_extrude(height = thick + ov)
+            intersection() {
+                square([w, h]);
+                voro_web_2d(segs, strut);
+            }
+}
+
+// --- Platzierung auf den 4 Außenflächen eines Korpus (x:0..W, y:0..D, z:0..H)
+//     Relief ragt nach außen (erhaben), um Rand-Margin m eingerückt
+//     (sitzt so auf den flachen Bändern, nicht in den abgerundeten Kanten).
+//     segs sind bereits für (Seite-2m) x (H-2m) erzeugt.
+module relief_front(W, H, segs, strut, thick, m)           // -Y bei y=0
+    translate([m, 0, m]) rotate([90, 0, 0])
+        voro_slab(W - 2*m, H - 2*m, segs, strut, thick);
+
+module relief_back(W, D, H, segs, strut, thick, m)         // +Y bei y=D
+    translate([W - m, D, m]) rotate([90, 0, 180])
+        voro_slab(W - 2*m, H - 2*m, segs, strut, thick);
+
+module relief_left(D, H, segs, strut, thick, m)            // -X bei x=0
+    translate([0, D - m, m]) rotate([90, 0, -90])
+        voro_slab(D - 2*m, H - 2*m, segs, strut, thick);
+
+module relief_right(W, D, H, segs, strut, thick, m)        // +X bei x=W
+    translate([W, m, m]) rotate([90, 0, 90])
+        voro_slab(D - 2*m, H - 2*m, segs, strut, thick);
+
+
 // ============================ voronoi_data.scad ============================
 // AUTO-GENERIERT von gen_voronoi.py - nicht von Hand editieren.
 // cell_face=7.0 cell_insert=12.0 seed=7
 
-// voro_face_long: Rechteck 237.0 x 14.0 mm, 149 Segmente
+// voro_face_long: Rechteck 237.0 x 15.0 mm, 149 Segmente
 voro_face_long = [
-  [135.610,-0.000,136.990,0.094],
-  [137.131,0.000,136.990,0.094],
-  [166.470,0.000,168.038,0.543],
-  [168.492,0.000,168.038,0.543],
-  [103.324,14.000,104.528,8.088],
-  [104.528,8.088,105.550,7.244],
-  [105.550,7.244,110.475,7.495],
-  [114.139,14.000,110.475,7.495],
-  [234.668,6.935,237.000,7.792],
-  [234.668,6.935,232.683,8.174],
-  [232.683,8.174,230.979,14.000],
-  [104.528,8.088,98.797,6.737],
-  [98.797,6.737,97.579,0.000],
-  [105.550,7.244,104.796,0.000],
-  [53.580,14.000,54.466,12.600],
-  [54.466,12.600,53.485,10.270],
-  [53.485,10.270,49.078,7.414],
-  [43.523,14.000,47.997,7.322],
-  [49.078,7.414,47.997,7.322],
-  [49.078,7.414,54.278,0.000],
-  [47.997,7.322,47.397,6.718],
-  [47.397,6.718,46.578,0.000],
-  [3.869,8.069,3.959,8.231],
-  [3.869,8.069,4.058,1.352],
-  [3.959,8.231,9.694,9.655],
-  [4.058,1.352,7.617,0.000],
-  [9.694,9.655,14.858,7.723],
-  [10.299,0.000,14.888,5.478],
-  [14.858,7.723,14.888,5.478],
-  [0.000,7.874,3.869,8.069],
-  [2.223,14.000,3.959,8.231],
-  [2.529,0.000,4.058,1.352],
-  [10.317,14.000,9.694,9.655],
-  [17.942,14.000,17.734,9.998],
-  [17.734,9.998,14.858,7.723],
-  [14.888,5.478,19.633,0.000],
-  [17.734,9.998,26.572,7.060],
-  [26.572,7.060,23.355,0.000],
-  [29.264,7.429,27.388,7.488],
-  [29.264,7.429,33.094,14.000],
-  [27.388,7.488,26.045,14.000],
-  [26.572,7.060,27.388,7.488],
-  [168.038,0.543,168.357,6.229],
-  [172.282,7.572,168.357,6.229],
-  [172.282,7.572,178.245,5.501],
-  [178.245,5.501,176.946,0.000],
-  [144.792,14.000,144.534,13.857],
-  [147.292,4.132,152.321,5.709],
-  [147.292,4.132,145.692,6.236],
-  [152.043,14.000,153.730,7.563],
-  [145.692,6.236,144.534,13.857],
-  [153.730,7.563,152.321,5.709],
-  [146.260,0.636,147.292,4.132],
-  [146.260,0.636,146.644,0.000],
-  [156.678,0.000,152.321,5.709],
-  [144.277,0.000,146.260,0.636],
-  [166.777,7.547,166.376,14.000],
-  [166.777,7.547,160.808,7.638],
-  [159.437,8.494,160.808,7.638],
-  [159.437,8.494,159.324,14.000],
-  [168.357,6.229,166.777,7.547],
-  [159.179,0.000,160.808,7.638],
-  [153.730,7.563,159.437,8.494],
-  [136.990,0.094,137.882,5.703],
-  [145.692,6.236,139.685,6.398],
-  [137.882,5.703,139.685,6.398],
-  [144.534,13.857,144.028,14.000],
-  [139.685,6.398,140.194,14.000],
-  [218.348,8.196,222.307,14.000],
-  [218.348,8.196,215.039,7.968],
-  [211.357,14.000,215.039,7.968],
-  [218.348,8.196,221.337,5.419],
-  [227.516,7.307,225.179,14.000],
-  [227.516,7.307,226.336,5.945],
-  [221.337,5.419,226.336,5.945],
-  [232.683,8.174,227.516,7.307],
-  [221.631,0.000,221.337,5.419],
-  [226.336,5.945,229.093,0.000],
-  [234.668,6.935,233.210,0.000],
-  [90.456,0.000,90.119,0.427],
-  [89.265,0.000,90.119,0.427],
-  [98.797,6.737,97.226,7.152],
-  [97.226,7.152,89.046,4.876],
-  [90.119,0.427,89.046,4.876],
-  [56.354,0.000,59.280,1.100],
-  [59.280,1.100,60.476,0.000],
-  [53.485,10.270,59.940,4.536],
-  [59.940,4.536,59.280,1.100],
-  [69.352,8.548,67.044,6.894],
-  [69.352,8.548,68.580,14.000],
-  [67.044,6.894,63.542,7.192],
-  [63.542,7.192,61.150,14.000],
-  [68.281,0.000,67.044,6.894],
-  [59.940,4.536,63.542,7.192],
-  [54.466,12.600,57.727,14.000],
-  [97.226,7.152,95.022,14.000],
-  [89.046,4.876,88.396,5.585],
-  [88.396,5.585,90.973,14.000],
-  [37.506,7.449,41.643,5.144],
-  [37.506,7.449,32.603,5.549],
-  [41.643,5.144,40.230,0.000],
-  [32.603,5.549,34.189,0.000],
-  [39.485,14.000,37.506,7.449],
-  [47.397,6.718,41.643,5.144],
-  [29.264,7.429,32.603,5.549],
-  [178.245,5.501,181.789,6.927],
-  [181.789,6.927,183.046,0.000],
-  [181.789,6.927,183.241,8.239],
-  [188.535,6.113,183.241,8.239],
-  [188.535,6.113,188.452,-0.000],
-  [196.379,6.179,199.759,14.000],
-  [196.379,6.179,192.822,7.316],
-  [192.822,7.316,192.129,14.000],
-  [188.535,6.113,192.822,7.316],
-  [182.644,14.000,183.241,8.239],
-  [215.039,7.968,212.289,4.355],
-  [212.289,4.355,212.687,0.000],
-  [172.282,7.572,174.360,14.000],
-  [132.485,8.086,126.989,8.568],
-  [132.485,8.086,134.531,8.988],
-  [134.531,8.988,136.343,14.000],
-  [126.989,8.568,128.205,14.000],
-  [132.779,0.000,132.485,8.086],
-  [126.824,0.000,125.155,7.236],
-  [125.155,7.236,126.989,8.568],
-  [137.882,5.703,134.531,8.988],
-  [119.092,14.000,121.826,8.189],
-  [125.155,7.236,121.826,8.189],
-  [111.052,7.038,118.843,6.045],
-  [111.052,7.038,113.445,0.000],
-  [118.843,6.045,117.891,0.000],
-  [110.475,7.495,111.052,7.038],
-  [121.826,8.189,118.843,6.045],
-  [75.496,7.485,72.611,0.000],
-  [75.496,7.485,76.847,7.976],
-  [76.847,7.976,80.660,7.501],
-  [79.820,0.000,81.183,7.032],
-  [80.660,7.501,81.183,7.032],
-  [69.352,8.548,75.496,7.485],
-  [75.014,14.000,76.847,7.976],
-  [82.164,14.000,80.660,7.501],
-  [88.396,5.585,81.183,7.032],
-  [205.622,14.000,204.760,6.925],
-  [212.289,4.355,206.864,5.241],
-  [204.760,6.925,206.864,5.241],
-  [196.379,6.179,197.422,4.998],
-  [204.760,6.925,197.422,4.998],
-  [197.422,4.998,197.977,0.000],
-  [206.864,5.241,204.512,0.000]
+  [8.057,0.000,4.064,1.466],
+  [2.347,-0.000,4.064,1.466],
+  [0.000,8.369,3.865,8.555],
+  [3.865,8.555,4.064,1.466],
+  [10.020,0.000,14.888,5.811],
+  [14.888,5.811,19.922,0.000],
+  [133.093,0.000,136.962,0.253],
+  [137.360,0.000,136.962,0.253],
+  [3.865,8.555,3.995,8.778],
+  [2.123,15.000,3.995,8.778],
+  [166.082,0.000,168.025,0.646],
+  [168.590,-0.000,168.025,0.646],
+  [111.004,7.512,113.559,0.000],
+  [111.004,7.512,118.872,6.561],
+  [118.872,6.561,117.839,0.000],
+  [121.921,8.654,118.872,6.561],
+  [121.921,8.654,118.935,15.000],
+  [110.378,7.989,114.326,15.000],
+  [110.378,7.989,111.004,7.512],
+  [126.901,0.000,125.109,7.769],
+  [121.921,8.654,125.109,7.769],
+  [25.976,15.000,27.423,7.986],
+  [27.423,7.986,29.169,7.932],
+  [33.288,15.000,29.169,7.932],
+  [34.285,0.000,32.543,6.090],
+  [23.204,0.000,26.665,7.598],
+  [27.423,7.986,26.665,7.598],
+  [29.169,7.932,32.543,6.090],
+  [58.137,15.000,54.575,13.526],
+  [53.571,15.000,54.575,13.526],
+  [90.569,0.000,90.192,0.458],
+  [90.192,0.458,89.212,0.000],
+  [110.378,7.989,105.568,7.750],
+  [105.568,7.750,104.761,-0.000],
+  [61.033,15.000,63.604,7.683],
+  [54.575,13.526,53.370,10.662],
+  [53.370,10.662,59.992,5.142],
+  [63.604,7.683,59.992,5.142],
+  [55.885,0.000,59.238,1.214],
+  [54.512,0.000,48.967,7.905],
+  [53.370,10.662,48.967,7.905],
+  [59.992,5.142,59.238,1.214],
+  [59.238,1.214,60.623,0.000],
+  [17.960,15.000,17.723,10.455],
+  [10.364,15.000,9.668,10.140],
+  [17.723,10.455,14.856,8.271],
+  [14.856,8.271,9.668,10.140],
+  [26.665,7.598,17.723,10.455],
+  [3.995,8.778,9.668,10.140],
+  [14.888,5.811,14.856,8.271],
+  [145.035,15.000,144.505,14.715],
+  [147.358,4.689,152.226,6.167],
+  [147.358,4.689,145.717,6.743],
+  [151.956,15.000,153.767,8.089],
+  [145.717,6.743,144.505,14.715],
+  [153.767,8.089,152.226,6.167],
+  [146.190,0.734,147.358,4.689],
+  [146.190,0.734,146.662,0.000],
+  [156.932,0.000,152.226,6.167],
+  [143.815,0.000,146.190,0.734],
+  [166.787,8.049,166.355,15.000],
+  [166.787,8.049,160.843,8.137],
+  [159.441,8.978,160.843,8.137],
+  [159.441,8.978,159.317,15.000],
+  [168.025,0.646,168.368,6.774],
+  [168.368,6.774,166.787,8.049],
+  [159.108,0.000,160.843,8.137],
+  [153.767,8.089,159.441,8.978],
+  [136.962,0.253,137.917,6.258],
+  [145.717,6.743,139.674,6.896],
+  [137.917,6.258,139.674,6.896],
+  [144.505,14.715,143.465,15.000],
+  [139.674,6.896,140.216,15.000],
+  [98.829,7.247,104.569,8.550],
+  [98.829,7.247,97.284,7.639],
+  [97.284,7.639,94.915,15.000],
+  [104.569,8.550,103.256,15.000],
+  [105.568,7.750,104.569,8.550],
+  [97.519,0.000,98.829,7.247],
+  [90.192,0.458,88.990,5.441],
+  [88.990,5.441,97.284,7.639],
+  [91.075,15.000,88.353,6.113],
+  [88.353,6.113,88.990,5.441],
+  [68.533,15.000,69.379,9.029],
+  [63.604,7.683,67.012,7.403],
+  [69.379,9.029,67.012,7.403],
+  [67.012,7.403,68.340,0.000],
+  [181.767,7.379,183.106,0.000],
+  [181.767,7.379,178.290,6.025],
+  [178.290,6.025,176.867,0.000],
+  [172.221,8.051,168.368,6.774],
+  [172.221,8.051,178.290,6.025],
+  [172.221,8.051,174.468,15.000],
+  [183.264,8.683,182.609,15.000],
+  [183.264,8.683,181.767,7.379],
+  [132.479,8.592,126.949,9.056],
+  [132.479,8.592,134.446,9.420],
+  [134.446,9.420,136.463,15.000],
+  [126.949,9.056,128.279,15.000],
+  [132.791,0.000,132.479,8.592],
+  [125.109,7.769,126.949,9.056],
+  [137.917,6.258,134.446,9.420],
+  [233.140,0.000,234.711,7.471],
+  [234.711,7.471,237.000,8.285],
+  [234.711,7.471,232.738,8.653],
+  [232.738,8.653,230.881,15.000],
+  [229.248,0.000,226.265,6.430],
+  [232.738,8.653,227.566,7.831],
+  [226.265,6.430,227.566,7.831],
+  [226.265,6.430,221.327,5.935],
+  [221.649,-0.000,221.327,5.935],
+  [39.585,15.000,37.445,7.912],
+  [43.300,15.000,48.102,7.834],
+  [37.445,7.912,41.695,5.668],
+  [41.695,5.668,47.411,7.165],
+  [48.102,7.834,47.411,7.165],
+  [32.543,6.090,37.445,7.912],
+  [48.967,7.905,48.102,7.834],
+  [40.139,0.000,41.695,5.668],
+  [46.538,0.000,47.411,7.165],
+  [79.755,0.000,81.211,7.507],
+  [72.483,0.000,75.565,7.997],
+  [80.625,8.016,76.900,8.469],
+  [80.625,8.016,81.211,7.507],
+  [76.900,8.469,75.565,7.997],
+  [88.353,6.113,81.211,7.507],
+  [69.379,9.029,75.565,7.997],
+  [82.241,15.000,80.625,8.016],
+  [74.912,15.000,76.900,8.469],
+  [227.566,7.831,225.062,15.000],
+  [221.327,5.935,218.227,8.687],
+  [218.227,8.687,222.535,15.000],
+  [215.134,8.479,212.271,4.887],
+  [215.134,8.479,211.153,15.000],
+  [204.736,7.393,205.663,15.000],
+  [204.736,7.393,206.931,5.724],
+  [206.931,5.724,212.271,4.887],
+  [218.227,8.687,215.134,8.479],
+  [198.014,0.000,197.398,5.551],
+  [188.447,0.000,188.537,6.631],
+  [188.537,6.631,192.841,7.801],
+  [192.841,7.801,196.324,6.721],
+  [197.398,5.551,196.324,6.721],
+  [204.736,7.393,197.398,5.551],
+  [204.362,0.000,206.931,5.724],
+  [183.264,8.683,188.537,6.631],
+  [192.095,15.000,192.841,7.801],
+  [199.903,15.000,196.324,6.721],
+  [212.271,4.887,212.717,0.000]
 ];
 
-// voro_face_short: Rechteck 84.0 x 14.0 mm, 49 Segmente
+// voro_face_short: Rechteck 84.0 x 15.0 mm, 49 Segmente
 voro_face_short = [
-  [84.000,7.085,79.091,7.758],
-  [79.091,7.758,80.122,0.000],
-  [18.163,6.545,28.080,6.266],
-  [18.163,6.545,19.863,13.990],
-  [28.080,6.266,26.855,14.000],
-  [19.863,13.990,19.882,14.000],
-  [17.473,5.813,18.163,6.545],
-  [17.473,5.813,11.599,6.765],
-  [19.834,14.000,19.863,13.990],
-  [9.921,14.000,11.599,6.765],
-  [35.018,5.449,29.093,4.985],
-  [35.018,5.449,37.555,0.000],
-  [29.093,4.985,27.195,0.000],
-  [17.473,5.813,18.673,0.000],
-  [28.080,6.266,29.093,4.985],
-  [41.160,9.542,41.783,14.000],
-  [41.160,9.542,37.093,8.050],
-  [37.093,8.050,33.360,14.000],
-  [35.018,5.449,37.093,8.050],
-  [65.304,5.275,65.128,0.000],
-  [65.304,5.275,71.184,5.686],
-  [71.184,5.686,72.173,0.000],
-  [63.162,6.594,65.304,5.275],
-  [63.162,6.594,57.717,4.485],
-  [57.717,4.485,57.218,0.000],
-  [46.538,6.222,47.845,6.451],
-  [46.538,6.222,43.825,0.000],
-  [47.845,6.451,51.223,0.000],
-  [41.160,9.542,46.538,6.222],
-  [56.051,5.871,48.325,6.746],
-  [56.051,5.871,56.321,14.000],
-  [48.325,6.746,50.840,14.000],
-  [57.717,4.485,56.051,5.871],
-  [47.845,6.451,48.325,6.746],
-  [63.162,6.594,63.226,13.570],
-  [62.301,14.000,63.226,13.570],
-  [79.091,7.758,78.607,8.298],
-  [80.935,14.000,78.607,8.298],
-  [71.184,5.686,73.627,8.365],
-  [78.607,8.298,73.627,8.365],
-  [3.276,5.574,9.591,5.022],
-  [3.276,5.574,3.055,5.421],
-  [3.055,5.421,3.715,0.000],
-  [9.591,5.022,9.732,0.000],
-  [3.792,14.000,3.276,5.574],
-  [11.599,6.765,9.591,5.022],
-  [0.000,5.134,3.055,5.421],
-  [63.226,13.570,64.178,14.000],
-  [73.627,8.365,70.598,14.000]
+  [84.000,7.584,79.073,8.229],
+  [79.073,8.229,80.166,0.000],
+  [41.132,10.006,41.830,15.000],
+  [41.132,10.006,37.168,8.598],
+  [37.168,8.598,33.151,15.000],
+  [18.123,7.039,28.105,6.773],
+  [18.123,7.039,19.908,14.856],
+  [28.105,6.773,26.802,15.000],
+  [19.908,14.856,20.191,15.000],
+  [17.433,6.337,18.123,7.039],
+  [17.433,6.337,11.642,7.244],
+  [19.485,15.000,19.908,14.856],
+  [9.844,15.000,11.642,7.244],
+  [34.946,5.937,29.161,5.498],
+  [34.946,5.937,37.711,0.000],
+  [29.161,5.498,27.069,0.000],
+  [37.168,8.598,34.946,5.937],
+  [28.105,6.773,29.161,5.498],
+  [17.433,6.337,18.742,0.000],
+  [65.309,5.782,65.117,0.000],
+  [65.309,5.782,71.157,6.176],
+  [71.157,6.176,72.231,0.000],
+  [63.160,7.056,65.309,5.782],
+  [63.160,7.056,57.741,5.035],
+  [57.741,5.035,57.181,0.000],
+  [56.046,6.386,48.262,7.231],
+  [56.046,6.386,56.332,15.000],
+  [48.262,7.231,50.955,15.000],
+  [57.741,5.035,56.046,6.386],
+  [51.398,-0.000,47.766,6.936],
+  [47.766,6.936,48.262,7.231],
+  [41.132,10.006,46.619,6.740],
+  [46.619,6.740,47.766,6.936],
+  [81.071,15.000,78.540,8.800],
+  [78.540,8.800,73.718,8.863],
+  [73.718,8.863,70.419,15.000],
+  [79.073,8.229,78.540,8.800],
+  [71.157,6.176,73.718,8.863],
+  [63.228,14.438,64.518,15.000],
+  [63.228,14.438,61.974,15.000],
+  [63.160,7.056,63.228,14.438],
+  [3.812,15.000,3.265,6.064],
+  [11.642,7.244,9.586,5.534],
+  [9.586,5.534,3.265,6.064],
+  [9.586,5.534,9.741,0.000],
+  [46.619,6.740,43.679,0.000],
+  [3.755,0.000,3.036,5.911],
+  [0.000,5.637,3.036,5.911],
+  [3.265,6.064,3.036,5.911]
 ];
 
 // voro_insert: Rechteck 57.0 x 79.0 mm, 84 Segmente
@@ -436,55 +503,8 @@ voro_insert = [
   [23.921,34.048,20.169,30.490]
 ];
 
-voro_dims = [[247.00,24.00],[94.00,24.00],[57.00,79.00]];
+voro_dims = [[247.00,25.00],[94.00,25.00],[57.00,79.00]];
 
-
-// ============================ voronoi.scad ============================
-// =====================================================================
-//  voronoi.scad  -  Voronoi-Netz (2D) + Relief-Platzierung auf Flächen
-// =====================================================================
-
-// 2D-Netz: jedes Segment wird zu einer "Kapsel" (hull zweier Kreise).
-module voro_web_2d(segs, strut) {
-    r = strut / 2;
-    union()
-        for (s = segs)
-            hull() {
-                translate([s[0], s[1]]) circle(r = r, $fn = 16);
-                translate([s[2], s[3]]) circle(r = r, $fn = 16);
-            }
-}
-
-// Relief-Scheibe: Netz auf Rechteck w x h geclippt, Dicke "thick" in +Z.
-// Taucht "ov" mm in den Körper ein (-Z), damit es sicher verschmilzt.
-module voro_slab(w, h, segs, strut, thick, ov = 0.8) {
-    translate([0, 0, -ov])
-        linear_extrude(height = thick + ov)
-            intersection() {
-                square([w, h]);
-                voro_web_2d(segs, strut);
-            }
-}
-
-// --- Platzierung auf den 4 Außenflächen eines Korpus (x:0..W, y:0..D, z:0..H)
-//     Relief ragt nach außen (erhaben), um Rand-Margin m eingerückt
-//     (sitzt so auf den flachen Bändern, nicht in den abgerundeten Kanten).
-//     segs sind bereits für (Seite-2m) x (H-2m) erzeugt.
-module relief_front(W, H, segs, strut, thick, m)           // -Y bei y=0
-    translate([m, 0, m]) rotate([90, 0, 0])
-        voro_slab(W - 2*m, H - 2*m, segs, strut, thick);
-
-module relief_back(W, D, H, segs, strut, thick, m)         // +Y bei y=D
-    translate([W - m, D, m]) rotate([90, 0, 180])
-        voro_slab(W - 2*m, H - 2*m, segs, strut, thick);
-
-module relief_left(D, H, segs, strut, thick, m)            // -X bei x=0
-    translate([0, D - m, m]) rotate([90, 0, -90])
-        voro_slab(D - 2*m, H - 2*m, segs, strut, thick);
-
-module relief_right(W, D, H, segs, strut, thick, m)        // +X bei x=W
-    translate([W, m, m]) rotate([90, 0, 90])
-        voro_slab(D - 2*m, H - 2*m, segs, strut, thick);
 
 // ============================ body.scad ============================
 // =====================================================================
@@ -493,8 +513,10 @@ module relief_right(W, D, H, segs, strut, thick, m)        // +X bei x=W
 //   - geschlossenem Boden; HINTEN offen für die einschiebbare Rückwand
 //   - Feder-&-Nut-Schiebehaltung der Einsätze: seitliche Lippen an der
 //     Fach-Oberkante (Einsatz von hinten einschieben, Frontwand = Anschlag)
-//   - zwei hintere Eckpfosten (nach außen verdickt) mit vertikaler Nut +
-//     Boden-Nut für die Rückwand
+//   - zwei MASSIVE hintere Eckpfosten (Kabelbox-Stil, rear_wall_t tief). Die
+//     senkrechte Rückwand füllt sie bündig; ihre Feder greift VORN in die Nut, DAHINTER der volle
+//     Pfosten stehen (~5,7 mm) -> Feder in Y gefangen, kein dünner Steg/Anschlag,
+//     der beim Stützen-Entfernen bricht.
 //   - 4 Füßen; Voronoi-Relief (eingerückt) auf Front + 2 Seiten
 // =====================================================================
 
@@ -506,7 +528,8 @@ module rounded_block(w, d, h, r) {
     }
 }
 
-// Fach-Aushöhlung je Fach als 3-Band-Profil (hinten offen):
+// Fach-Aushöhlung je Fach als 3-Band-Profil (endet an der Rückwand-Vorderkante;
+// der Bereich dahinter wird von rear_cut geöffnet):
 //   Band 1: unteres Fach (Ladestation/Auflage), schmaler -> Ledge
 //   Band 2: Einsatzkörper, volle Fachbreite
 //   Band 3: "Mund" oben, schmaler -> stehenbleibende Lippe übergreift den Einsatz
@@ -530,18 +553,17 @@ module bay_cutouts() {
 }
 
 // Rückwand-Aufnahme (Subtraktion):
-//   - Plattenraum: volle Innenbreite, bis ganz nach HINTEN durchgehend offen
-//     -> hinter der Rückwand bleibt nur die offene Pfosten-Lücke (Trennwände
-//     enden vor der Rückwand, keine Stummel dahinter).
-//   - zwei senkrechte Feder-Nuten in den MASSIVEN Eckpfosten, auf Plattenhöhe (Y);
-//     hinter der Nut bleibt der volle Pfosten -> Feder in Y gefangen, robust.
+//   - Plattenraum: volle Innenbreite bis zur Rückseite -> die rear_wall_t tiefe
+//     Rückwand füllt ihn bündig; Trennwände enden vor der Rückwand (keine Stummel).
+//   - zwei senkrechte Feder-Nuten VORN in den MASSIVEN Eckpfosten (nur rear_tongue_d tief).
+//     Hinter der Nut bleibt der volle Pfosten stehen -> Feder in Y gefangen, robust.
 //   - quer laufende Boden-Nut für die Plattenunterkante.
 module rear_cut() {
     // Plattenraum (bis zur Rückseite durchgehend -> öffnet die Pfosten-Lücke)
     translate([wall_t - rear_clear, rear_wall_y0 - rear_clear, floor_t])
         cube([inner_w + 2*rear_clear,
               outer_d - rear_wall_y0 + rear_clear + 1, body_height + 1]);
-    // seitliche Feder-Nuten (links/rechts) IM Pfosten, auf Plattenhöhe (Y).
+    // seitliche Feder-Nuten (links/rechts) VORN im Pfosten (nur rear_tongue_d tief).
     xg0 = wall_t - rear_tongue_w - rear_clear;
     for (sx = [0, 1]) {
         gx = (sx == 0) ? xg0 : (outer_w - wall_t);
@@ -554,14 +576,14 @@ module rear_cut() {
         cube([inner_w + 2*rear_tongue_w, rear_wall_t, floor_groove_d + 0.01]);
 }
 
-module feet() {
-    insets = foot_inset + foot_r;     // Mittelpunkt vom Rand
-    for (px = [insets, outer_w - insets],
-         py = [insets, outer_d - insets])
-        translate([px, py, -foot_h])
-            cylinder(h = foot_h + 2, r = foot_r, $fn = 36);
+// Steck-System: der Boden trägt nur Sacklöcher (von unten) für die separaten
+// Füße (siehe foot.scad) -> kein nach unten zeigender Zapfen, stützenfrei.
+module foot_holes() {
+    eps = 0.05;
+    for (p = foot_pts())
+        translate([p[0], p[1], -eps])
+            cylinder(d = peg_hole_d, h = peg_hole_dep + eps, $fn = 32);
 }
-
 
 // Rundungs-Hülle für den Korpus: rundet ALLE Oberkanten sauber mit R5 (auch die
 // eckig gefräste Nut-Oberkante hinten). XY um Relief-Aufmaß größer + nach unten weit
@@ -581,7 +603,6 @@ module body() {
         difference() {
             union() {
                 rounded_block(outer_w, outer_d, body_height, fillet_r);
-                feet();
                 // Voronoi-Relief (eingerückt um fillet_r) auf Front + 2 Seiten
                 // (Rückseite trägt die separate Rückwand -> dort eigenes Relief)
                 relief_front(outer_w, body_height, voro_face_long,  voro_strut, relief_h, fillet_r);
@@ -590,6 +611,7 @@ module body() {
             }
             bay_cutouts();
             rear_cut();
+            foot_holes();
         }
         _body_round_env();
     }
@@ -601,11 +623,10 @@ module body() {
 //  grid.scad  -  Einsteckgitter im Voronoi-Stil (ein Fach)
 //  Aufruf:  openscad -D bay_index=0 -o grid0.stl grid.scad
 //  stand : Voronoi-Panel + zentraler Zapfen (Bürste aufstecken)
-//          orb Ø10 x 14 | son Ø7 x 10
-//  charge: Voronoi-Panel + Öffnung  orb: Ellipse 42x55 (unten 45° aufgeweitet) | son: D-Kontur 40x55
+//          orb Ø10 x 14 | son Ø5,5 x 8,5
+//  charge: Voronoi-Panel + Öffnung  orb: Ø42 rund | son: D-Kontur 51x63
 // =====================================================================
 
-bay_index = 0;   // per -D überschreiben
 
 // D-Kontur der Sonicare-Ladestation: BOGEN nach VORNE (-Y), GERADE nach
 // HINTEN (+Y) — passend zur realen Station (gerade Rückseite zur Rückwand).
@@ -618,7 +639,7 @@ module dshape(w, L) {
 }
 
 // 2D-Lade-Öffnung, zentriert. grow = umlaufendes Spiel.
-//   Oral-B: Ellipse 42x55 | Sonicare: D-Kontur 40x55 (Halbkreis vorne)
+//   Oral-B: Ellipse 42x55 | Sonicare: D-Kontur 51x63
 module charge_open_2d(mk, grow = 0) {
     if (mk == "son")
         dshape(son_charger_x + 2*grow, son_charger_y + 2*grow);
@@ -669,12 +690,20 @@ module peg_son() {
         cylinder(d1 = pd, d2 = pd - 2*peg_chamfer, h = peg_chamfer);
 }
 
-module grid_panel(w, d, segs) {
-    linear_extrude(height = insert_h)
-        union() {
-            difference() { square([w, d]); offset(-1.8) square([w, d]); }   // Rahmen
-            intersection() { square([w, d]); voro_web_2d(segs, voro_strut); }
-        }
+// v2: GESCHLOSSENE solide Platte (das Muster kommt als dünnes Relief oben drauf).
+module grid_panel(w, d)
+    linear_extrude(height = insert_h) square([w, d]);
+
+// Dünnes Voronoi-Relief auf der OBERSEITE des Einschubs (1 Lage, nur Deko).
+// Rand um rail_overhang+ frei halten -> kollidiert nicht mit der Fach-Lippe.
+module insert_relief(w, d) {
+    m = rail_overhang + 1.5; ov = 0.4;
+    translate([0, 0, insert_h - ov])
+        linear_extrude(relief_insert_h + ov)
+            intersection() {
+                translate([m, m]) square([w - 2*m, d - 2*m]);
+                voro_web_2d(voro_insert, voro_strut);
+            }
 }
 
 // Einsatz-Hüllprofil (T-Querschnitt): volle Breite unten = Feder, die unter
@@ -689,29 +718,47 @@ module insert_envelope(w, d) {
     }
 }
 
+// Halbrunde Kabelrinne (son_cable_w breit x son_cable_h hoch) an der GERADEN
+// (hinteren, +Y) D-Kante auf der UNTERSEITE -> Sonicare-Kabel liegt sauber nach
+// hinten. Wird in grid_insert relativ zum Öffnungszentrum subtrahiert.
+module son_cable_notch(grow) {
+    rr = son_cable_w / 2;
+    zc = son_cable_h - rr;                      // Kreismitte -> Oberkante bei son_cable_h
+    ys = (son_charger_y + 2*grow)/2 - 1;        // an der geraden D-Kante (leicht in die Öffnung)
+    translate([0, ys, zc]) rotate([-90, 0, 0])
+        cylinder(r = rr, h = 60, $fn = 32);     // Achse +Y, bis hinter den Einschubrand
+}
+
 module grid_insert(fn, mk) {
     w = bay_inner_w  - 2 * clearance;
     d = insert_depth - 2 * clearance;          // lässt hinten Platz für die Rückwand
     cx = w / 2; cy = d / 2;
     if (fn == "stand") {
         union() {
-            intersection() { grid_panel(w, d, voro_insert); insert_envelope(w, d); }
+            intersection() { grid_panel(w, d); insert_envelope(w, d); }
+            insert_relief(w, d);
             translate([cx, cy, 0])
                 if (mk == "orb") peg_orb(); else peg_son();
         }
-    } else {  // charge
+    } else if (fn == "tray") {  // Ablage: komplett geschlossene Platte + Relief
+        union() {
+            intersection() { grid_panel(w, d); insert_envelope(w, d); }
+            insert_relief(w, d);
+        }
+    } else {  // charge: geschlossene Platte + Relief, dann Ladeöffnung ausschneiden
         grow = son_charger_fit;
         difference() {
-            intersection() {
-                insert_envelope(w, d);                 // T-Profil = Schiebeführung
-                union() {
-                    grid_panel(w, d, voro_insert);
-                    translate([cx, cy, 0])
-                        linear_extrude(insert_h) offset(collar_t) charge_open_2d(mk, grow);
-                }
+            union() {
+                intersection() { grid_panel(w, d); insert_envelope(w, d); }
+                insert_relief(w, d);
             }
-            translate([cx, cy, 0])
-                charge_cut(mk, grow);
+            translate([cx, cy, 0]) charge_cut(mk, grow);
+            // Relief-Schicht ueber der Oeffnung mitraeumen (charge_cut endet snug
+            // an der Plattenoberkante, das duenne Relief darueber bliebe sonst stehen)
+            translate([cx, cy, insert_h - 0.05])
+                linear_extrude(relief_insert_h + 0.1) charge_open_2d(mk, grow);
+            // Sonicare: halbrunde Kabelrinne an der geraden D-Kante (Unterseite)
+            if (mk == "son") translate([cx, cy, 0]) son_cable_notch(grow);
         }
     }
 }
@@ -721,9 +768,11 @@ module grid_insert(fn, mk) {
 // =====================================================================
 //  rear_wall.scad  -  separate Rückwand, von oben senkrecht eingeschoben
 //   - Platte (inner_w x body_height x rear_wall_t)
-//   - seitliche Federn links/rechts (breit, mit Einführfase) -> Eckpfosten-Nuten
+//   - seitliche Federn links/rechts (volle Plattentiefe, mit Einführfase) ->
+//     gleiten in die senkrechten Nuten der massiven Eckpfosten; der volle
+//     Pfosten HINTER der Nut fängt die Feder in Y (robust, kein dünner Steg).
 //   - Unterkante in der Boden-Nut gelagert
-//   - Voronoi-Relief außen
+//   - Voronoi-Relief außen (auf der Plattenrückseite)
 //   - je Fach ein nach UNTEN offener Kabel-Schlitz (Stecker passt durch)
 //  Render:  openscad -o rearwall.stl rear_wall.scad
 // =====================================================================
@@ -731,12 +780,14 @@ module grid_insert(fn, mk) {
 x0r = wall_t;  x1r = outer_w - wall_t;          // Plattenränder (X)
 z0r = floor_t - floor_groove_d;                 // Unterkante (in Boden-Nut)
 phr = body_height - z0r;
+y_back = rear_wall_y0 + rear_wall_t;            // Plattenrückseite (Relief-Ebene)
 
-// Voronoi-Relief auf der Außenseite (gleiches Band wie Korpus-Front/Rück)
+// Voronoi-Relief auf der Außenseite (gleiches Band wie Korpus-Front/Rück).
+//  Platte sitzt bei y in [rear_wall_y0, y_back]; Relief erhaben auf y_back.
 module rear_relief() {
     m = fillet_r;
     intersection() {
-        translate([outer_w - m, rear_wall_y0 + rear_wall_t, m]) rotate([90, 0, 180])
+        translate([outer_w - m, y_back, m]) rotate([90, 0, 180])
             voro_slab(outer_w - 2*m, body_height - 2*m, voro_face_long, voro_strut, relief_h);
         translate([wall_t, rear_wall_y0 - 1, 0])           // auf Plattengröße clippen
             cube([inner_w, rear_wall_t + relief_h + 2, body_height]);
@@ -744,8 +795,9 @@ module rear_relief() {
 }
 
 // seitliche Feder mit Einführfase unten (sx=0 links, 1 rechts).
-// Feder ist in Y ZURÜCKGESETZT (Tiefe td), damit sie in die hinten geschlossene
-// Wand-Nut passt -> in Y gefangen. Platte selbst bleibt hinten bündig (outer_d).
+// Feder = Platte seitlich verlängert über die VOLLE Plattentiefe (Y) -> teilt sich
+// eine durchgehende Fläche mit der Platte (sauber verschmolzen) und greift in die
+// Pfosten-Nut. In Y zwischen Nut-Vorderwand und massivem Pfosten dahinter gefangen.
 module rear_tongue(sx) {
     xin  = (sx == 0) ? x0r : x1r;
     xout = (sx == 0) ? x0r - rear_tongue_w : x1r + rear_tongue_w;
@@ -770,8 +822,8 @@ module cable_slot(cx) {
 }
 
 // Rundungs-Hülle = Gehäuse-Außenform (R5), in +Y um das Relief verlängert.
-// Schneidet die Rückwand so, dass ihre Kanten oben/unten/hinten der Gehäuse-
-// rundung folgen (statt eckig zu sein). Die Seiten (x innen) bleiben unberührt.
+// outer_d (= Pfosten-Rückseite) deckt Platte + Feder + Relief voll ab -> rundet die
+// oberen Kanten der Platte, ohne die Feder zu beschneiden.
 module _round_env() {
     minkowski() {
         translate([fillet_r, fillet_r, fillet_r])
@@ -797,34 +849,67 @@ module rear_wall() {
 }
 
 
-// ============================ Druckplatte (alle Teile) ============================
-// Korpus + n Gitter + Rueckwand (flach gekippt, Relief oben) nebeneinander.
+// ============================ foot.scad ============================
+// =====================================================================
+//  foot.scad  -  separater Steck-Fuß (Kabelbox-Stil)
+//  Zylinder Ø2*foot_r × foot_h mit Zapfen Ø peg_d × peg_h nach OBEN; wird
+//  von unten in das Boden-Sackloch gesteckt. Zapfen zeigt nach oben ->
+//  stützenfrei druckbar (Fußkörper liegt beim Druck auf der Platte).
+//  Render einzeln:  openscad -o foot.stl foot.scad
+// =====================================================================
+
+// Kanonischer Fuß am Ursprung: Körper z=0..foot_h, Zapfen z=foot_h..+peg_h.
+module corner_foot() {
+    cylinder(d = 2*foot_r, h = foot_h, $fn = 48);
+    // Zapfen mit kleiner Einführfase an der Spitze
+    translate([0, 0, foot_h - 0.01]) {
+        cylinder(d = peg_d, h = peg_h - peg_chamfer + 0.01, $fn = 32);
+        translate([0, 0, peg_h - peg_chamfer])
+            cylinder(d1 = peg_d, d2 = peg_d - 2*peg_chamfer, h = peg_chamfer, $fn = 32);
+    }
+}
+
+// 4 Füße an den Eckpositionen, Körper unter dem Boden (z = -foot_h).
+module corner_feet()
+    for (p = foot_pts())
+        translate([p[0], p[1], -foot_h]) corner_foot();
+
+
+// ============================ Druckplatte + Teil-Auswahl ============================
 module _platte() {
     GAP = 8;
-    gw = bay_inner_w - 2*clearance;        // Gitterbreite
-    gd = insert_depth - 2*clearance;       // Gittertiefe
-    row2 = outer_d + GAP;                  // Reihe Gitter
+    gw = bay_inner_w - 2*clearance;        // Einschubbreite
+    gd = insert_depth - 2*clearance;       // Einschubtiefe
+    row2 = outer_d + GAP;                  // Reihe Einschuebe
     row3 = row2 + gd + GAP;                // Reihe Rueckwand
     body();
     for (i = [0 : n_bays - 1])
         translate([i*(gw + GAP), row2, 0]) grid_insert(bays[i][0], bays[i][1]);
-    // Rueckwand flach: um 90 Grad gekippt (Relief nach oben), in Reihe 3
+    // Rueckwand flach gekippt (Relief nach oben)
     translate([0, row3 + body_height, -rear_wall_y0]) rotate([90, 0, 0]) rear_wall();
+    // 4 Steck-Fuesse (Zapfen oben, wie gedruckt) in eigener Reihe
+    for (i = [0:3])
+        translate([i*(2*foot_r + GAP) + foot_r, row3 + body_height + GAP + foot_r, 0])
+            corner_foot();
 }
 
-// ============================ Teil-Auswahl / Render ============================
-if      (part == "platte")                    _platte();
-else if (part == "korpus")                    body();
-else if (part == "gitter1" && n_bays >= 1)    grid_insert(bays[0][0], bays[0][1]);
-else if (part == "gitter2" && n_bays >= 2)    grid_insert(bays[1][0], bays[1][1]);
-else if (part == "gitter3" && n_bays >= 3)    grid_insert(bays[2][0], bays[2][1]);
-else if (part == "gitter4" && n_bays >= 4)    grid_insert(bays[3][0], bays[3][1]);
-else if (part == "rueckwand")                 rear_wall();
-else {  // montage (Vorschau der konfigurierten Belegung)
+module _montage() {
     body();
+    corner_feet();
     for (i = [0 : n_bays - 1])
         translate([wall_t + i*(bay_inner_w + divider_t) + clearance,
                    wall_t + clearance, body_height - insert_h])
             grid_insert(bays[i][0], bays[i][1]);
     rear_wall();
 }
+
+if      (part == "platte")                 _platte();
+else if (part == "korpus")                 body();
+else if (part == "gitter1" && n_bays >= 1) grid_insert(bays[0][0], bays[0][1]);
+else if (part == "gitter2" && n_bays >= 2) grid_insert(bays[1][0], bays[1][1]);
+else if (part == "gitter3" && n_bays >= 3) grid_insert(bays[2][0], bays[2][1]);
+else if (part == "gitter4" && n_bays >= 4) grid_insert(bays[3][0], bays[3][1]);
+else if (part == "rueckwand")              rear_wall();
+else if (part == "fuss")                   corner_foot();
+else if (part == "ablage")                 grid_insert("tray", "-");
+else                                       _montage();

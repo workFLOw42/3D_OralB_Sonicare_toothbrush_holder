@@ -15,8 +15,9 @@ wall_t       = 5.0;   // Außenwandstärke (mm) - dick genug für die bündige
                       //   senkrechte Rückwand-Nut in den Seitenwänden (statt Außenpfosten)
 body_depth   = 79;    // lichte Fachtiefe in Y (Front-Innenkante .. Rückwand-Vorderkante)
 floor_t      = 3.0;   // Bodenstärke (mm, jetzt geschlossen)
-// Wandhöhe = Boden + größte Ladestationshöhe -> Ladestation schließt bündig ab
-body_height  = 24;    // = floor_t(3) + Oral-B-Ladehöhe(21); bei Änderung anpassen
+// Wandhöhe = Boden + größte Ladestationshöhe (+1 mm höhere Wände). Die Ladestationen
+// bleiben über pf = body_height - charger_h bündig (Sockel wächst um 1 mm mit).
+body_height  = 25;    // = floor_t(3) + Oral-B-Ladehöhe(21) + 1 mm höhere Wände
 
 // ---- Einsatz-Sitz ---------------------------------------------------
 insert_h     = 6.0;   // Dicke der Einsatzgitter (mm)
@@ -28,6 +29,14 @@ fillet_r     = 5.0;   // Radius aller Außenkanten/Ecken (0,5 cm)
 foot_r       = 5.0;   // Fußradius (0,5 cm)
 foot_h       = 5.0;   // Fußhöhe (0,5 cm)
 foot_inset   = 5.0;   // Fußrand 0,5 cm von der Ecke (Mittelpunkt = inset+foot_r)
+
+// ---- Steck-System: separate Füße (Kabelbox-Stil) -------------------
+//  Füße werden von UNTEN in den Boden gesteckt (Zapfen zeigt nach oben ->
+//  stützenfrei). Der Boden trägt nur Sacklöcher, kein nach unten zeigender Zapfen.
+peg_d        = 5.0;   // Zapfen-Durchmesser
+peg_h        = 2.0;   // Zapfen-Höhe (Steck-Tiefe)
+peg_hole_d   = 5.1;   // Aufnahme-Loch im Boden (snug, +0,1 mm Spiel)
+peg_hole_dep = 2.0;   // Sackloch-Tiefe im Boden (floor_t=3 -> 1 mm bleibt stehen)
 
 // ---- Feder & Nut: Einsatz-Schiebehaltung (Gridfinity-Stil) ---------
 //  Einsatz wird von HINTEN eingeschoben; seitliche Lippen an der Fach-
@@ -62,18 +71,22 @@ voro_seed     = 7;    // Zufalls-Seed (deterministisch)
 voro_cell     = 12;   // Zellabstand Einsätze (mm)
 voro_cell_face = 7;   // Zellabstand Korpus-Flächen (feiner, schmales Band)
 voro_strut   = 1.8;   // Stegbreite (mm)
-relief_h     = 1.4;   // Reliefhöhe am Korpus (erhaben, mm)
+relief_h     = 0.4;   // Reliefhöhe Korpus + Rückwand (erhaben, ~2 Lagen, nur Deko)
+relief_insert_h = 0.2; // Reliefhöhe Einschübe (1 Lage, Muster auf geschlossener Platte)
 
 // ---- Ladestations-Maße (für flächenbündiges Abschließen) ------------
 charger_h_orb = 21;   // Oral-B Ladestationshöhe (aus Referenz-Cavity ~21)
 charger_h_son = 20;   // Sonicare Ladestationshöhe (gemessen)
 // Oral-B Ladeöffnung: OVAL (Ellipse), aus chargeur-Gitter gemessen
-orb_charger_x = 42;     // oval Breite (X, quer)
-orb_charger_y = 55;     // oval Länge (Y)
-// Sonicare: D-Kontur (quer ins Fach). Vorne voller Halbkreis (Ø = Breite 40).
-son_charger_x = 40;     // D-Breite (X, quer) = Durchmesser des Front-Halbkreises
-son_charger_y = 55;     // D-Tiefe (Y)
+orb_charger_x = 41;     // oval Breite (X, quer)  -- 1 mm schmaler
+orb_charger_y = 54;     // oval Länge (Y)         -- 1 mm weniger tief
+// Sonicare: D-Kontur (quer ins Fach). Vorne voller Halbkreis (Ø = Breite).
+son_charger_x = 39;     // D-Breite (X, quer)     -- 1 mm schmaler
+son_charger_y = 53;     // D-Tiefe (Y)            -- 2 mm weniger tief
 son_charger_fit = 1.0;  // Spiel rundum für die Ladestation (mm)
+// Kabelrinne an der GERADEN D-Kante, Unterseite des Sonicare-Einschubs
+son_cable_w   = 5.0;    // Breite der halbrunden Kabelrinne (X)
+son_cable_h   = 2.0;    // Höhe der Kabelrinne (Z, von der Unterseite hoch)
 
 // ---- Ständer-Zapfen je Marke (Bürste aufstecken) -------------------
 // Oral-B: OVALER, sich verjüngender Zapfen (Mesh-Schnitt Ladestation_OralB_ständer.3mf:
@@ -93,17 +106,18 @@ collar_t  = 3.0;  // Verstärkungs-Kragen um Lade-Öffnungen (mm)
 //  Anzahl Module + Typ je Fach. Typ = Funktion (Ständer/Laden) + Marke.
 /* [Belegung] */
 n_bays = 4; // [1,2,3,4]
-bay1 = "stand_orb";  // [stand_orb:OralB Ständer, charge_orb:OralB Laden, stand_son:Sonicare Ständer, charge_son:Sonicare Laden]
-bay2 = "charge_orb"; // [stand_orb:OralB Ständer, charge_orb:OralB Laden, stand_son:Sonicare Ständer, charge_son:Sonicare Laden]
-bay3 = "charge_son"; // [stand_orb:OralB Ständer, charge_orb:OralB Laden, stand_son:Sonicare Ständer, charge_son:Sonicare Laden]
-bay4 = "stand_son";  // [stand_orb:OralB Ständer, charge_orb:OralB Laden, stand_son:Sonicare Ständer, charge_son:Sonicare Laden]
+bay1 = "stand_orb";  // [stand_orb:OralB Ständer, charge_orb:OralB Laden, stand_son:Sonicare Ständer, charge_son:Sonicare Laden, tray:Ablage]
+bay2 = "charge_orb"; // [stand_orb:OralB Ständer, charge_orb:OralB Laden, stand_son:Sonicare Ständer, charge_son:Sonicare Laden, tray:Ablage]
+bay3 = "charge_son"; // [stand_orb:OralB Ständer, charge_orb:OralB Laden, stand_son:Sonicare Ständer, charge_son:Sonicare Laden, tray:Ablage]
+bay4 = "stand_son";  // [stand_orb:OralB Ständer, charge_orb:OralB Laden, stand_son:Sonicare Ständer, charge_son:Sonicare Laden, tray:Ablage]
 
 // Typ-String -> [funktion, marke, label]
 function _baytype(s) =
     s == "stand_orb"  ? ["stand",  "orb", "OralB-Staender"]    :
     s == "charge_orb" ? ["charge", "orb", "OralB-Laden"]       :
     s == "stand_son"  ? ["stand",  "son", "Sonicare-Staender"] :
-                        ["charge", "son", "Sonicare-Laden"];
+    s == "charge_son" ? ["charge", "son", "Sonicare-Laden"]    :
+                        ["tray",   "-",   "Ablage"];   // komplett geschlossen, kein Zapfen/Öffnung
 _baysel = [bay1, bay2, bay3, bay4];
 bays = [ for (i = [0 : n_bays - 1]) _baytype(_baysel[i]) ];
 
@@ -111,6 +125,10 @@ bays = [ for (i = [0 : n_bays - 1]) _baytype(_baysel[i]) ];
 inner_w = n_bays*bay_inner_w + (n_bays-1)*divider_t;
 outer_w = inner_w + 2*wall_t;
 outer_d = wall_t + body_depth + rear_wall_t;         // Front-Wand + Fachtiefe + bündige Rückwand/Pfosten
+
+// 4 Fuß-/Sackloch-Positionen (gemeinsame Wahrheitsquelle für Boden + Füße)
+function foot_pts() = let (m = foot_inset + foot_r)
+    [[m, m], [outer_w - m, m], [m, outer_d - m], [outer_w - m, outer_d - m]];
 
 // Rückwand füllt die Pfostenzone bündig; ihre Feder greift vorn in die Pfosten-Nut.
 rear_wall_y0 = outer_d - rear_wall_t;                // Vorderkante der Rückwand (Y) = wall_t + body_depth

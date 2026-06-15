@@ -3,6 +3,39 @@
 Versionshistorie des frei konfigurierbaren Zahnbürstenhalters. Format angelehnt an
 [Keep a Changelog](https://keepachangelog.com/de/). Maße in mm.
 
+## [2.0] – 2026-06-15 · Steck-System, flaches Relief, geschlossene Einsätze + Ablage
+
+Umbau im Stil der Kabelbox v2. Stützenfreier, schlichterer Aufbau.
+
+### Geändert
+- **Voronoi-Relief flach** (rein optisch, ~Lagen-dünn): `relief_h` 1,4 → **0,4 mm**
+  (Korpus + Rückwand); neuer `relief_insert_h` = **0,2 mm** (Einsätze).
+- **Einsätze geschlossen** statt offenes Gitter: solide Platte (T-Profil für die
+  Schiebeführung bleibt) mit **dünnem Voronoi-Relief oben**. Gilt **universal** für
+  alle Einsatz-Typen (Ständer, Laden, Ablage). Ständer-Zapfen und Lade-Öffnungen
+  bleiben funktional; bei „Laden" wird die Relief-Schicht über der Öffnung mitgeräumt.
+- **Füße steckbar**: integrierte Füße entfallen; der Boden trägt **4 Sacklöcher**
+  (Ø5,1, 2 mm tief), die Füße sind ein **separates Teil** (`foot.scad`, Zylinder Ø10
+  × 5 mm + Zapfen Ø5 × 2 mm nach oben) und werden von unten eingesteckt. Kein nach
+  unten zeigender Zapfen → stützenfrei.
+- **Wände +1 mm** höher: `body_height` 24 → **25 mm** (Ladestationen bleiben über
+  `pf = body_height − charger_h` bündig).
+
+### Geändert · Geräte-Passung (Maße)
+- **Sonicare-Ladeöffnung** 1 mm schmaler + 2 mm weniger tief: `son_charger_x` 40 → 39,
+  `son_charger_y` 55 → 53.
+- **Sonicare-Einsatz**: neue **halbrunde Kabelrinne** (5 mm breit × 2 mm hoch) auf der
+  **Unterseite** am geraden D-Ende → Kabel liegt sauber nach hinten (`son_cable_w/h`).
+- **Oral-B-Ladeöffnung** 1 mm schmaler + 1 mm weniger tief: `orb_charger_x` 42 → 41,
+  `orb_charger_y` 55 → 54.
+
+### Neu
+- **Einsatz-Typ „Ablage"** (`tray`): komplett geschlossene Platte ohne Zapfen/Öffnung,
+  je Fach wählbar (`bayN = "tray"`) und als eigenes Teil in der MakerWorld-Datei.
+- **`gen_makerworld.py`**: erzeugt die MakerWorld-Einzeldatei reproduzierbar aus den
+  Quellen. Customizer-Teile zusätzlich: `fuss` (Steck-Fuß) und `ablage`.
+- `build.ps1` / `pack_3mf.py` bauen/packen jetzt auch die Füße.
+
 ## [1.2] – 2026-06-12 · Sonicare-Zapfen angepasst
 
 ### Geändert · Geräte-Passung (Maße)

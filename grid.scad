@@ -73,12 +73,20 @@ module peg_son() {
         cylinder(d1 = pd, d2 = pd - 2*peg_chamfer, h = peg_chamfer);
 }
 
-module grid_panel(w, d, segs) {
-    linear_extrude(height = insert_h)
-        union() {
-            difference() { square([w, d]); offset(-1.8) square([w, d]); }   // Rahmen
-            intersection() { square([w, d]); voro_web_2d(segs, voro_strut); }
-        }
+// v2: GESCHLOSSENE solide Platte (das Muster kommt als dünnes Relief oben drauf).
+module grid_panel(w, d)
+    linear_extrude(height = insert_h) square([w, d]);
+
+// Dünnes Voronoi-Relief auf der OBERSEITE des Einschubs (1 Lage, nur Deko).
+// Rand um rail_overhang+ frei halten -> kollidiert nicht mit der Fach-Lippe.
+module insert_relief(w, d) {
+    m = rail_overhang + 1.5; ov = 0.4;
+    translate([0, 0, insert_h - ov])
+        linear_extrude(relief_insert_h + ov)
+            intersection() {
+                translate([m, m]) square([w - 2*m, d - 2*m]);
+                voro_web_2d(voro_insert, voro_strut);
+            }
 }
 
 // Einsatz-Hüllprofil (T-Querschnitt): volle Breite unten = Feder, die unter
@@ -93,29 +101,47 @@ module insert_envelope(w, d) {
     }
 }
 
+// Halbrunde Kabelrinne (son_cable_w breit x son_cable_h hoch) an der GERADEN
+// (hinteren, +Y) D-Kante auf der UNTERSEITE -> Sonicare-Kabel liegt sauber nach
+// hinten. Wird in grid_insert relativ zum Öffnungszentrum subtrahiert.
+module son_cable_notch(grow) {
+    rr = son_cable_w / 2;
+    zc = son_cable_h - rr;                      // Kreismitte -> Oberkante bei son_cable_h
+    ys = (son_charger_y + 2*grow)/2 - 1;        // an der geraden D-Kante (leicht in die Öffnung)
+    translate([0, ys, zc]) rotate([-90, 0, 0])
+        cylinder(r = rr, h = 60, $fn = 32);     // Achse +Y, bis hinter den Einschubrand
+}
+
 module grid_insert(fn, mk) {
     w = bay_inner_w  - 2 * clearance;
     d = insert_depth - 2 * clearance;          // lässt hinten Platz für die Rückwand
     cx = w / 2; cy = d / 2;
     if (fn == "stand") {
         union() {
-            intersection() { grid_panel(w, d, voro_insert); insert_envelope(w, d); }
+            intersection() { grid_panel(w, d); insert_envelope(w, d); }
+            insert_relief(w, d);
             translate([cx, cy, 0])
                 if (mk == "orb") peg_orb(); else peg_son();
         }
-    } else {  // charge
+    } else if (fn == "tray") {  // Ablage: komplett geschlossene Platte + Relief
+        union() {
+            intersection() { grid_panel(w, d); insert_envelope(w, d); }
+            insert_relief(w, d);
+        }
+    } else {  // charge: geschlossene Platte + Relief, dann Ladeöffnung ausschneiden
         grow = son_charger_fit;
         difference() {
-            intersection() {
-                insert_envelope(w, d);                 // T-Profil = Schiebeführung
-                union() {
-                    grid_panel(w, d, voro_insert);
-                    translate([cx, cy, 0])
-                        linear_extrude(insert_h) offset(collar_t) charge_open_2d(mk, grow);
-                }
+            union() {
+                intersection() { grid_panel(w, d); insert_envelope(w, d); }
+                insert_relief(w, d);
             }
-            translate([cx, cy, 0])
-                charge_cut(mk, grow);
+            translate([cx, cy, 0]) charge_cut(mk, grow);
+            // Relief-Schicht ueber der Oeffnung mitraeumen (charge_cut endet snug
+            // an der Plattenoberkante, das duenne Relief darueber bliebe sonst stehen)
+            translate([cx, cy, insert_h - 0.05])
+                linear_extrude(relief_insert_h + 0.1) charge_open_2d(mk, grow);
+            // Sonicare: halbrunde Kabelrinne an der geraden D-Kante (Unterseite)
+            if (mk == "son") translate([cx, cy, 0]) son_cable_notch(grow);
         }
     }
 }

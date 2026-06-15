@@ -2,6 +2,7 @@
 (passt auf den Bambu X2D-Tisch 256x256). In Bambu Studio direkt öffenbar.
 """
 import os
+import time
 import trimesh
 import numpy as np
 
@@ -9,7 +10,14 @@ D = os.path.dirname(os.path.abspath(__file__))
 GAP = 6.0
 
 def load(name):
-    return trimesh.load(rf"{D}\{name}", force="mesh")
+    # Retry: frisch von OpenSCAD geschriebene STL kann kurz noch nicht lesbar sein
+    # (Flush/AV-Scan) -> trimesh.load liefert dann None.
+    for _ in range(8):
+        m = trimesh.load(rf"{D}\{name}", force="mesh")
+        if m is not None and len(m.vertices) > 0:
+            return m
+        time.sleep(0.3)
+    raise RuntimeError(f"konnte {name} nicht laden: {rf'{D}\{name}'}")
 
 def at(mesh, x, y):
     m = mesh.copy()
@@ -35,6 +43,14 @@ for i, lab in enumerate(labels):
 rw = load("rearwall.stl")
 y_row2 = y_row + max(load(f"grid{i}.stl").extents[1] for i in range(4)) + GAP
 scene.add_geometry(at(rw, 0, y_row2), geom_name="Rueckwand_Voronoi")
+
+# 4 identische Steck-Füße (Zapfen oben, wie gedruckt) in eigener Reihe
+foot = load("foot.stl")
+y_row3 = y_row2 + rw.extents[1] + GAP
+fx = 0.0
+for i in range(4):
+    scene.add_geometry(at(foot, fx, y_row3), geom_name=f"Fuss_{i + 1}")
+    fx += foot.extents[0] + GAP
 
 out = rf"{D}\Zahnbuersten_Voronoi_4er.3mf"
 scene.export(out)
