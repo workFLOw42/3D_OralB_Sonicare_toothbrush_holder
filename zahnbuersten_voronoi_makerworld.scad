@@ -143,9 +143,12 @@ inner_w = n_bays*bay_inner_w + (n_bays-1)*divider_t;
 outer_w = inner_w + 2*wall_t;
 outer_d = wall_t + body_depth + rear_wall_t;         // Front-Wand + Fachtiefe + bündige Rückwand/Pfosten
 
-// 4 Fuß-/Sackloch-Positionen (gemeinsame Wahrheitsquelle für Boden + Füße)
-function foot_pts() = let (m = foot_inset + foot_r)
-    [[m, m], [outer_w - m, m], [m, outer_d - m], [outer_w - m, outer_d - m]];
+// 4 Fuß-/Sackloch-Positionen (gemeinsame Wahrheitsquelle für Boden + Füße).
+// WICHTIG: hintere Füße NICHT bei outer_d-m setzen — dort liegt der Rückwand-
+// Schacht + die Boden-Nut (kein Vollmaterial -> Sackloch waere durchgaengig und
+// der Zapfen kollidierte mit der Rueckwand). Daher knapp VOR die Rückwand (yr).
+function foot_pts() = let (m = foot_inset + foot_r, yr = rear_wall_y0 - foot_r - 2)
+    [[m, m], [outer_w - m, m], [m, yr], [outer_w - m, yr]];
 
 // Rückwand füllt die Pfostenzone bündig; ihre Feder greift vorn in die Pfosten-Nut.
 rear_wall_y0 = outer_d - rear_wall_t;                // Vorderkante der Rückwand (Y) = wall_t + body_depth

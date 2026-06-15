@@ -29,6 +29,12 @@ Umbau im Stil der Kabelbox v2. Stützenfreier, schlichterer Aufbau.
 - **Oral-B-Ladeöffnung** 1 mm schmaler + 1 mm weniger tief: `orb_charger_x` 42 → 41,
   `orb_charger_y` 55 → 54.
 
+### Behoben
+- **Hintere Füße kollidierten mit der Rückwand**: die hinteren Fuß-Sacklöcher lagen bei
+  `outer_d − 10` = `rear_wall_y0` (84) und trafen dort auf den Rückwand-Schacht + die
+  Boden-Nut → Loch durchgängig, kein Halt, Zapfen im Weg der Rückwand. `foot_pts()`
+  setzt die hinteren Füße jetzt knapp **vor** die Rückwand (`yr = rear_wall_y0 − foot_r − 2`).
+
 ### Neu
 - **Einsatz-Typ „Ablage"** (`tray`): komplett geschlossene Platte ohne Zapfen/Öffnung,
   je Fach wählbar (`bayN = "tray"`) und als eigenes Teil in der MakerWorld-Datei.
