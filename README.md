@@ -99,15 +99,27 @@ zustande kommen, ist transparent in [`MEASUREMENTS.md`](MEASUREMENTS.md) dokumen
 | 4 | außen | Ständer | Sonicare | runder Zapfen Ø5,5 mm         | `grid3.stl` |
 
 Einstellbar in `params.scad`: `n_bays` (1–4) und `bay1..bay4`
-(`stand_orb` / `charge_orb` / `stand_son` / `charge_son`). Der Korpus passt seine
-Breite automatisch an. *(Hinweis: das Voronoi-Flächenrelief ist für 4 Fächer
+(`stand_orb` / `charge_orb` / `stand_son` / `charge_son` / `tray` / `cup`). Der Korpus
+passt seine Breite automatisch an. *(Hinweis: das Voronoi-Flächenrelief ist für 4 Fächer
 vorberechnet und wird bei weniger Fächern vorne nur beschnitten; die Gitter-Muster
 in den Fächern sind davon unabhängig.)*
 
 <p align="center">
   <img src="doc_top.png" alt="Draufsicht der 4 Fächer" width="780"><br>
-  <em>Draufsicht: Oral-B-Ständer (ovaler Zapfen) · Oral-B-Laden (Oval 42×55) ·
-  Sonicare-Laden (D-Kontur 40×55) · Sonicare-Ständer (runder Zapfen Ø5,5)</em>
+  <em>Draufsicht: Oral-B-Ständer (ovaler Zapfen) · Oral-B-Laden (Oval 41×54) ·
+  Sonicare-Laden (D-Kontur 39×53) · Sonicare-Ständer (runder Zapfen Ø5,5)</em>
+</p>
+
+### Beispiel-Konfiguration: 2er (Becher + Ablage)
+Ein fertig konfigurierter 2-Fach-Build (`n_bays=2`, `bay1="cup"`, `bay2="tray"`): ein
+hoher **Becher** (Voronoi außen, gerundet, 80 mm) neben einer **Ablagefläche**
+(geschlossen). Druckfertige Platte + Einzel-STLs liegen in
+[`examples/2er-Becher-Ablage/`](examples/2er-Becher-Ablage)
+(Platte 127,8 × 217,4 mm → passt auf X2D; Becher steht aufrecht, Rest liegt flach).
+
+<p align="center">
+  <img src="examples/2er-Becher-Ablage/doc_2er.png" alt="2er: Becher + Ablage" width="640"><br>
+  <em>2er: Becher (hoch, gerundet, Voronoi außen) + Ablagefläche (geschlossen)</em>
 </p>
 
 ---
