@@ -36,7 +36,7 @@ HEADER = """// =================================================================
 
 /* [Teil-Auswahl] */
 // Was erzeugen? "platte" = alle Teile druckfertig auf einer X2D-Platte.
-part = "platte"; // [platte:Alle Teile auf X2D-Platte, montage:Montage-Vorschau, korpus:Korpus, gitter1:Einsatz Fach 1, gitter2:Einsatz Fach 2, gitter3:Einsatz Fach 3, gitter4:Einsatz Fach 4, rueckwand:Rueckwand, fuss:Steck-Fuss, ablage:Ablage (geschlossen)]
+part = "platte"; // [platte:Alle Teile auf X2D-Platte, montage:Montage-Vorschau, korpus:Korpus, gitter1:Einsatz Fach 1, gitter2:Einsatz Fach 2, gitter3:Einsatz Fach 3, gitter4:Einsatz Fach 4, rueckwand:Rueckwand, fuss:Steck-Fuss, ablage:Ablage (geschlossen), becher:Becher]
 
 /* [Hinweis] */
 // Das Voronoi-Flaechenrelief ist fuer 4 Faecher vorberechnet; bei weniger Faechern
@@ -81,6 +81,7 @@ else if (part == "gitter4" && n_bays >= 4) grid_insert(bays[3][0], bays[3][1]);
 else if (part == "rueckwand")              rear_wall();
 else if (part == "fuss")                   corner_foot();
 else if (part == "ablage")                 grid_insert("tray", "-");
+else if (part == "becher")                 grid_insert("cup", "-");
 else                                       _montage();
 """
 
@@ -95,8 +96,8 @@ def main():
     vdata = read("voronoi_data.scad")
     body = strip_lines(strip_includes(read("body.scad")), [r"body\(\);"])
     grid = strip_lines(strip_includes(read("grid.scad")),
-                       [r"bay_index\s*=\s*\d+;.*", r"fn\s*=\s*bays\[bay_index\]\[0\];",
-                        r"mk\s*=\s*bays\[bay_index\]\[1\];", r"grid_insert\(fn, mk\);"])
+                       [r"bay_index\s*=\s*\d+;.*", r"part_id\s*=\s*-?\d+;.*",
+                        r"_fn\s*=\s*.*;", r"_mk\s*=\s*.*;", r"grid_insert\(_fn, _mk\);"])
     rear = strip_lines(strip_includes(read("rear_wall.scad")), [r"rear_wall\(\);"])
     foot = strip_lines(strip_includes(read("foot.scad")), [r"corner_foot\(\);"])
 

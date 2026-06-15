@@ -3,6 +3,19 @@
 Versionshistorie des frei konfigurierbaren Zahnbürstenhalters. Format angelehnt an
 [Keep a Changelog](https://keepachangelog.com/de/). Maße in mm.
 
+## [2.1] – 2026-06-15 · Ablage als Einzeldatei + neuer Becher-Einsatz
+
+### Neu
+- **Ablage als Einzeldatei** `grid4.stl` (eigener Render über `-D part_id=4`); im
+  4er-Sammel-3MF bewusst **nicht** enthalten.
+- **Becher-Einsatz** `grid5` / Typ `cup`: hoher (`cup_h`=80 mm) Behälter über die
+  **volle Einschub-Fläche**, **Voronoi-Relief auf den Außenwänden**, rundum
+  **abgerundet** (`cup_round`), hohl/oben offen, unten T-Profil-Schiebebasis.
+  Wählbar je Fach (`bayN="cup"`), als Einzeldatei (`-D part_id=5`) und im Customizer
+  (`part="becher"`). Neue Params `cup_h`/`cup_wall`/`cup_round`, Voronoi-Felder
+  `voro_cup_w`/`voro_cup_d`.
+- Render-Dispatcher in `grid.scad` (`part_id`): −1 = Fach, 4 = Ablage, 5 = Becher.
+
 ## [2.0] – 2026-06-15 · Steck-System, flaches Relief, geschlossene Einsätze + Ablage
 
 Umbau im Stil der Kabelbox v2. Stützenfreier, schlichterer Aufbau.

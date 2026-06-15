@@ -9,7 +9,8 @@ include <params.scad>
 include <voronoi_data.scad>
 use <voronoi.scad>
 
-bay_index = 0;   // per -D überschreiben
+bay_index = 0;   // per -D: 0..3 = Fach
+part_id   = -1;  // per -D: -1 = Fach (bay_index); 4 = Ablage (tray); 5 = Becher (cup)
 
 // D-Kontur der Sonicare-Ladestation: BOGEN nach VORNE (-Y), GERADE nach
 // HINTEN (+Y) — passend zur realen Station (gerade Rückseite zur Rückwand).
@@ -112,6 +113,51 @@ module son_cable_notch(grow) {
         cylinder(r = rr, h = 60, $fn = 32);     // Achse +Y, bis hinter den Einschubrand
 }
 
+// rounded-rect Helper (für den Becher)
+module rrect(w, d, r)
+    translate([r, r]) offset(r = r, $fn = 48) square([w - 2*r, d - 2*r]);
+
+// ---- Becher (grid5) -------------------------------------------------
+// Gerundete Außenschale: Footprint exakt 0..w / 0..d, vertikale Kanten + obere
+// Kante mit r gerundet, Boden flach (für die Schiebe-Basis). offset(-r) rrect ist
+// bereits um r eingerückt -> minkowski(sphere r) stellt 0..w/0..d wieder her.
+module cup_outer(w, d, h, r)
+    intersection() {
+        minkowski() {
+            linear_extrude(max(0.01, h - r)) offset(-r) rrect(w, d, r);
+            sphere(r = r, $fn = 24);
+        }
+        linear_extrude(h) square([w, d]);
+    }
+
+// Voronoi-Relief auf den 4 Außenwänden (nur oberhalb der Schiebe-Basis).
+module cup_relief(w, d, h, m)
+    intersection() {
+        union() {
+            relief_front(w,    h, voro_cup_w, voro_strut, relief_h, m);
+            relief_back (w, d, h, voro_cup_w, voro_strut, relief_h, m);
+            relief_left (d, h, voro_cup_d, voro_strut, relief_h, m);
+            relief_right(w, d, h, voro_cup_d, voro_strut, relief_h, m);
+        }
+        translate([-50, -50, insert_h]) cube([w + 100, d + 100, h]);
+    }
+
+// Becher über die volle Einschub-Fläche: gerundete Schale, hohl (oben offen),
+// unten T-Profil-Schiebebasis (= Boden), Voronoi außen.
+module cup() {
+    w = bay_inner_w  - 2 * clearance;
+    d = insert_depth - 2 * clearance;
+    H = cup_h; wt = cup_wall; rr = cup_round; bh = insert_h;
+    union() {
+        intersection() { linear_extrude(bh) square([w, d]); insert_envelope(w, d); }   // Basis
+        difference() {
+            cup_outer(w, d, H, rr);                                                    // Außenschale
+            translate([wt, wt, bh]) linear_extrude(H) rrect(w - 2*wt, d - 2*wt, max(0.8, rr - wt)); // Hohlraum, oben offen
+        }
+        cup_relief(w, d, H, rr);
+    }
+}
+
 module grid_insert(fn, mk) {
     w = bay_inner_w  - 2 * clearance;
     d = insert_depth - 2 * clearance;          // lässt hinten Platz für die Rückwand
@@ -128,6 +174,8 @@ module grid_insert(fn, mk) {
             intersection() { grid_panel(w, d); insert_envelope(w, d); }
             insert_relief(w, d);
         }
+    } else if (fn == "cup") {   // Becher: hoher gerundeter Behälter, Voronoi außen
+        cup();
     } else {  // charge: geschlossene Platte + Relief, dann Ladeöffnung ausschneiden
         grow = son_charger_fit;
         difference() {
@@ -146,6 +194,6 @@ module grid_insert(fn, mk) {
     }
 }
 
-fn = bays[bay_index][0];
-mk = bays[bay_index][1];
-grid_insert(fn, mk);
+_fn = part_id == 4 ? "tray" : part_id == 5 ? "cup" : bays[bay_index][0];
+_mk = part_id >= 4 ? "-" : bays[bay_index][1];
+grid_insert(_fn, _mk);

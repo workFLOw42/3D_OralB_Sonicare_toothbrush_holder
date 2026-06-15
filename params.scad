@@ -66,6 +66,13 @@ floor_groove_d = 1.5;  // Boden-Nut-Tiefe für die Rückwand-Unterkante
 cable_hole_w  = 12;   // Breite des Kabel-Schlitzes je Fach (X)
 cable_hole_h  = 11;   // Oberkante des Schlitzes über dem Boden (Z), unten offen
 
+// ---- Becher-Einsatz (grid5, "cup") ---------------------------------
+//  Hoher Becher über die volle Einschub-Fläche, abgerundet, Voronoi außen.
+//  Unten T-Profil-Basis (Schiebeführung wie die anderen Einsätze).
+cup_h     = 80;    // Becher-Gesamthöhe (mm)
+cup_wall  = 2.5;   // Becher-Wandstärke (mm)
+cup_round = 5.0;   // Rundung (vertikale Kanten + obere Kante)
+
 // ---- Voronoi --------------------------------------------------------
 voro_seed     = 7;    // Zufalls-Seed (deterministisch)
 voro_cell     = 12;   // Zellabstand Einsätze (mm)
@@ -106,10 +113,10 @@ collar_t  = 3.0;  // Verstärkungs-Kragen um Lade-Öffnungen (mm)
 //  Anzahl Module + Typ je Fach. Typ = Funktion (Ständer/Laden) + Marke.
 /* [Belegung] */
 n_bays = 4; // [1,2,3,4]
-bay1 = "stand_orb";  // [stand_orb:OralB Ständer, charge_orb:OralB Laden, stand_son:Sonicare Ständer, charge_son:Sonicare Laden, tray:Ablage]
-bay2 = "charge_orb"; // [stand_orb:OralB Ständer, charge_orb:OralB Laden, stand_son:Sonicare Ständer, charge_son:Sonicare Laden, tray:Ablage]
-bay3 = "charge_son"; // [stand_orb:OralB Ständer, charge_orb:OralB Laden, stand_son:Sonicare Ständer, charge_son:Sonicare Laden, tray:Ablage]
-bay4 = "stand_son";  // [stand_orb:OralB Ständer, charge_orb:OralB Laden, stand_son:Sonicare Ständer, charge_son:Sonicare Laden, tray:Ablage]
+bay1 = "stand_orb";  // [stand_orb:OralB Ständer, charge_orb:OralB Laden, stand_son:Sonicare Ständer, charge_son:Sonicare Laden, tray:Ablage, cup:Becher]
+bay2 = "charge_orb"; // [stand_orb:OralB Ständer, charge_orb:OralB Laden, stand_son:Sonicare Ständer, charge_son:Sonicare Laden, tray:Ablage, cup:Becher]
+bay3 = "charge_son"; // [stand_orb:OralB Ständer, charge_orb:OralB Laden, stand_son:Sonicare Ständer, charge_son:Sonicare Laden, tray:Ablage, cup:Becher]
+bay4 = "stand_son";  // [stand_orb:OralB Ständer, charge_orb:OralB Laden, stand_son:Sonicare Ständer, charge_son:Sonicare Laden, tray:Ablage, cup:Becher]
 
 // Typ-String -> [funktion, marke, label]
 function _baytype(s) =
@@ -117,7 +124,8 @@ function _baytype(s) =
     s == "charge_orb" ? ["charge", "orb", "OralB-Laden"]       :
     s == "stand_son"  ? ["stand",  "son", "Sonicare-Staender"] :
     s == "charge_son" ? ["charge", "son", "Sonicare-Laden"]    :
-                        ["tray",   "-",   "Ablage"];   // komplett geschlossen, kein Zapfen/Öffnung
+    s == "tray"       ? ["tray",   "-",   "Ablage"]            :   // komplett geschlossen
+                        ["cup",    "-",   "Becher"];   // hoher Becher, Voronoi außen
 _baysel = [bay1, bay2, bay3, bay4];
 bays = [ for (i = [0 : n_bays - 1]) _baytype(_baysel[i]) ];
 

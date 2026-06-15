@@ -27,6 +27,8 @@ def read_params(path):
     p["inner_w"] = p["n_bays"] * p["bay_inner_w"] + (p["n_bays"] - 1) * p["divider_t"]
     p["outer_w"] = p["inner_w"] + 2 * p["wall_t"]
     p["outer_d"] = p["wall_t"] + p["body_depth"] + p["rear_wall_t"]
+    p["rear_wall_y0"] = p["outer_d"] - p["rear_wall_t"]
+    p["insert_depth"] = p["rear_wall_y0"] - p["rear_clear"] - p["wall_t"]
     return p
 
 
@@ -85,10 +87,16 @@ def main():
     seed = int(p["voro_seed"])
     cell_i = p["voro_cell"]; cell_f = p.get("voro_cell_face", cell_i)
     m = p.get("fillet_r", 0.0)   # Relief um Fillet-Radius einrücken (flache Bänder)
+    # Becher-Außenwände (Fläche - 2*cup_round, da Relief um cup_round eingerückt)
+    cw = p["bay_inner_w"] - 2 * p["clearance"]      # Becher-Außenbreite (X)
+    cd = p["insert_depth"] - 2 * p["clearance"]     # Becher-Außentiefe (Y)
+    rr = p.get("cup_round", 5.0); ch = p.get("cup_h", 80.0)
     jobs = {
         "voro_face_long":  (p["outer_w"] - 2 * m, p["body_height"] - 2 * m, seed,     cell_f),
         "voro_face_short": (p["outer_d"] - 2 * m, p["body_height"] - 2 * m, seed + 1, cell_f),
         "voro_insert":     (p["bay_inner_w"], p["body_depth"], seed + 2,              cell_i),
+        "voro_cup_w":      (cw - 2 * rr, ch - 2 * rr, seed + 3,                       cell_f),
+        "voro_cup_d":      (cd - 2 * rr, ch - 2 * rr, seed + 4,                       cell_f),
     }
     lines = ["// AUTO-GENERIERT von gen_voronoi.py - nicht von Hand editieren.",
              f"// cell_face={cell_f} cell_insert={cell_i} seed={seed}", ""]
