@@ -9,11 +9,12 @@ python "$dir\gen_voronoi.py"
 Write-Host "2/4 Korpus rendern..."
 & $osc -o "$dir\body.stl" "$dir\body.scad"
 
-Write-Host "3/4 Gitter + Rueckwand rendern..."
+Write-Host "3/4 Gitter + Rueckwand + Fuss rendern..."
 for ($i = 0; $i -lt 4; $i++) {
     & $osc -D bay_index=$i -o "$dir\grid$i.stl" "$dir\grid.scad"
 }
 & $osc -o "$dir\rearwall.stl" "$dir\rear_wall.scad"
+& $osc -o "$dir\foot.stl"     "$dir\foot.scad"
 
 Write-Host "4/4 3MF packen + Vorschau..."
 python "$dir\pack_3mf.py"

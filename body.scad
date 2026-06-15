@@ -70,12 +70,13 @@ module rear_cut() {
         cube([inner_w + 2*rear_tongue_w, rear_wall_t, floor_groove_d + 0.01]);
 }
 
-module feet() {
-    insets = foot_inset + foot_r;     // Mittelpunkt vom Rand
-    for (px = [insets, outer_w - insets],
-         py = [insets, outer_d - insets])
-        translate([px, py, -foot_h])
-            cylinder(h = foot_h + 2, r = foot_r, $fn = 36);
+// Steck-System: der Boden trägt nur Sacklöcher (von unten) für die separaten
+// Füße (siehe foot.scad) -> kein nach unten zeigender Zapfen, stützenfrei.
+module foot_holes() {
+    eps = 0.05;
+    for (p = foot_pts())
+        translate([p[0], p[1], -eps])
+            cylinder(d = peg_hole_d, h = peg_hole_dep + eps, $fn = 32);
 }
 
 // Rundungs-Hülle für den Korpus: rundet ALLE Oberkanten sauber mit R5 (auch die
@@ -96,7 +97,6 @@ module body() {
         difference() {
             union() {
                 rounded_block(outer_w, outer_d, body_height, fillet_r);
-                feet();
                 // Voronoi-Relief (eingerückt um fillet_r) auf Front + 2 Seiten
                 // (Rückseite trägt die separate Rückwand -> dort eigenes Relief)
                 relief_front(outer_w, body_height, voro_face_long,  voro_strut, relief_h, fillet_r);
@@ -105,6 +105,7 @@ module body() {
             }
             bay_cutouts();
             rear_cut();
+            foot_holes();
         }
         _body_round_env();
     }

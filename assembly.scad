@@ -7,8 +7,10 @@ use <voronoi.scad>
 use <body.scad>
 use <grid.scad>
 use <rear_wall.scad>
+use <foot.scad>
 
 color([0.20, 0.45, 0.75]) body();
+color([0.95, 0.80, 0.30]) corner_feet();   // 4 steckbare Füße (unter dem Boden)
 
 // Einsätze an Endposition (von hinten eingeschoben, vorne am Anschlag)
 for (i = [0 : n_bays - 1]) {
