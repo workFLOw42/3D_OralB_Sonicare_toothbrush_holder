@@ -1206,6 +1206,17 @@ module cup_outer(w, d, h, r)
     }
 
 // Voronoi-Relief auf den 4 Außenwänden (nur oberhalb der Schiebe-Basis).
+// Schnittkoerper, der die Becherschale UNTERHALB der Einschubhoehe auf das
+// T-Profil zwingt (volle Breite unten = Feder, schmaler oben um rail_overhang
+// je Seite -> Fach-Lippe greift). Oberhalb insert_h volle Breite (Wand/Relief
+// bleiben unberuehrt).
+module cup_clip(w, d, H)
+    union() {
+        insert_envelope(w, d);                              // 0..insert_h : T-Profil
+        translate([0, 0, insert_h]) cube([w, d, H + 1]);    // darueber : voll
+    }
+
+// Voronoi-Relief auf den 4 Außenwänden (nur oberhalb der Schiebe-Basis).
 module cup_relief(w, d, h, m)
     intersection() {
         union() {
@@ -1225,10 +1236,12 @@ module cup() {
     H = cup_h; wt = cup_wall; rr = cup_round; bh = insert_h;
     union() {
         intersection() { linear_extrude(bh) square([w, d]); insert_envelope(w, d); }   // Basis
+        intersection() {
+        cup_clip(w, d, H);   // Schale unter insert_h auf T-Profil zwingen (Lippe)
         difference() {
             cup_outer(w, d, H, rr);                                                    // Außenschale
             translate([wt, wt, bh]) linear_extrude(H) rrect(w - 2*wt, d - 2*wt, max(0.8, rr - wt)); // Hohlraum, oben offen
-        }
+        } }   // schliesst difference + intersection (cup_clip)
         cup_relief(w, d, H, rr);
     }
 }
