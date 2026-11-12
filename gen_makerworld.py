@@ -34,11 +34,13 @@ HEADER = """// =================================================================
 //  steckbare Fuesse. AUTO-GENERIERT von gen_makerworld.py - nicht von Hand editieren.
 // =====================================================================
 
-/* [Teil-Auswahl] */
-// Was erzeugen? "platte" = alle Teile druckfertig auf einer X2D-Platte.
-part = "platte"; // [platte:Alle Teile auf X2D-Platte, montage:Montage-Vorschau, korpus:Korpus, gitter1:Einsatz Fach 1, gitter2:Einsatz Fach 2, gitter3:Einsatz Fach 3, gitter4:Einsatz Fach 4, rueckwand:Rueckwand, fuss:Steck-Fuss, ablage:Ablage (geschlossen), becher:Becher]
+/* [Part selection / Teil-Auswahl] */
+// What to generate? "platte" = all parts print-ready on one X2D plate. / Was erzeugen? "platte" = alle Teile druckfertig auf einer X2D-Platte.
+part = "platte"; // [platte:All parts on X2D plate / Alle Teile auf X2D-Platte, montage:Assembly preview / Montage-Vorschau, korpus:Body / Korpus, gitter1:Insert bay 1 / Einsatz Fach 1, gitter2:Insert bay 2 / Einsatz Fach 2, gitter3:Insert bay 3 / Einsatz Fach 3, gitter4:Insert bay 4 / Einsatz Fach 4, rueckwand:Rear wall / Rückwand, fuss:Plug-in foot / Steck-Fuß, ablage:Tray (closed) / Ablage (geschlossen), becher:Cup / Becher]
 
-/* [Hinweis] */
+/* [Note / Hinweis] */
+// The Voronoi surface relief is precomputed for 4 bays; with fewer bays it is
+// only trimmed at the front (purely cosmetic). The insert patterns are independent.
 // Das Voronoi-Flaechenrelief ist fuer 4 Faecher vorberechnet; bei weniger Faechern
 // wird es vorne nur beschnitten (rein optisch). Die Einschub-Muster sind unabhaengig.
 """

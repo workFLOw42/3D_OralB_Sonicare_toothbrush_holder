@@ -111,12 +111,17 @@ collar_t  = 3.0;  // Verstärkungs-Kragen um Lade-Öffnungen (mm)
 
 // ---- Bay-Belegung (konfigurierbar) ---------------------------------
 //  Anzahl Module + Typ je Fach. Typ = Funktion (Ständer/Laden) + Marke.
-/* [Belegung] */
+/* [Bay layout / Belegung] */
+// Number of bays / Anzahl Fächer
 n_bays = 4; // [1,2,3,4]
-bay1 = "stand_orb";  // [stand_orb:OralB Ständer, charge_orb:OralB Laden, stand_son:Sonicare Ständer, charge_son:Sonicare Laden, tray:Ablage, cup:Becher]
-bay2 = "charge_orb"; // [stand_orb:OralB Ständer, charge_orb:OralB Laden, stand_son:Sonicare Ständer, charge_son:Sonicare Laden, tray:Ablage, cup:Becher]
-bay3 = "charge_son"; // [stand_orb:OralB Ständer, charge_orb:OralB Laden, stand_son:Sonicare Ständer, charge_son:Sonicare Laden, tray:Ablage, cup:Becher]
-bay4 = "stand_son";  // [stand_orb:OralB Ständer, charge_orb:OralB Laden, stand_son:Sonicare Ständer, charge_son:Sonicare Laden, tray:Ablage, cup:Becher]
+// Bay 1 type / Typ Fach 1
+bay1 = "stand_orb";  // [stand_orb:Oral-B stand / Ständer, charge_orb:Oral-B charging / Laden, stand_son:Sonicare stand / Ständer, charge_son:Sonicare charging / Laden, tray:Tray / Ablage, cup:Cup / Becher]
+// Bay 2 type / Typ Fach 2
+bay2 = "charge_orb"; // [stand_orb:Oral-B stand / Ständer, charge_orb:Oral-B charging / Laden, stand_son:Sonicare stand / Ständer, charge_son:Sonicare charging / Laden, tray:Tray / Ablage, cup:Cup / Becher]
+// Bay 3 type / Typ Fach 3
+bay3 = "charge_son"; // [stand_orb:Oral-B stand / Ständer, charge_orb:Oral-B charging / Laden, stand_son:Sonicare stand / Ständer, charge_son:Sonicare charging / Laden, tray:Tray / Ablage, cup:Cup / Becher]
+// Bay 4 type / Typ Fach 4
+bay4 = "stand_son";  // [stand_orb:Oral-B stand / Ständer, charge_orb:Oral-B charging / Laden, stand_son:Sonicare stand / Ständer, charge_son:Sonicare charging / Laden, tray:Tray / Ablage, cup:Cup / Becher]
 
 // Typ-String -> [funktion, marke, label]
 function _baytype(s) =
